@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>ReportFile/DayReport_Awk_bak.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="clickfile" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="conversionfile" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="awkfile" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="awkfile_click" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="awkfile_conversion" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="workfolder" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="dayclickfile" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="dayconversionfile" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>79</pd:startX>
+    <pd:startY>63</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>712</pd:endX>
+    <pd:endY>65</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1484120839790</pd:targetNamespace>
+    <pd:activity name="DayClick">
+        <pd:type>com.tibco.plugin.cmdexec.CmdExecActivity</pd:type>
+        <pd:resourceType>ae.activities.CmdExecActivity</pd:resourceType>
+        <pd:x>319</pd:x>
+        <pd:y>184</pd:y>
+        <config>
+            <outputToString>true</outputToString>
+            <lineSplit>None</lineSplit>
+        </config>
+        <pd:inputBindings>
+            <CmdInput>
+                <command>
+                    <xsl:value-of select="concat(&#xA;&quot;gawk.exe -f &quot;,&#xA;$Start/root/awkfile_click,&#xA;&quot; &quot;,&#xA;$Start/root/clickfile,&#xA;&quot; &quot;,&#xA;$Start/root/dayclickfile&#xA;)"/>
+                </command>
+                <xsl:if test="$Start/root/workfolder">
+                    <workingDirectory>
+                        <xsl:value-of select="$Start/root/workfolder"/>
+                    </workingDirectory>
+                </xsl:if>
+            </CmdInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="DayConversion">
+        <pd:type>com.tibco.plugin.cmdexec.CmdExecActivity</pd:type>
+        <pd:resourceType>ae.activities.CmdExecActivity</pd:resourceType>
+        <pd:x>430</pd:x>
+        <pd:y>179</pd:y>
+        <config>
+            <outputToString>true</outputToString>
+            <lineSplit>None</lineSplit>
+        </config>
+        <pd:inputBindings>
+            <CmdInput>
+                <command>
+                    <xsl:value-of select="concat(&#xA;&quot;gawk.exe -f &quot;,&#xA;$Start/root/awkfile_conversion,&#xA;&quot; &quot;,&#xA;$Start/root/conversionfile,&#xA;&quot; &quot;,&#xA;$Start/root/dayconversionfile&#xA;)"/>
+                </command>
+                <xsl:if test="$Start/root/workfolder">
+                    <workingDirectory>
+                        <xsl:value-of select="$Start/root/workfolder"/>
+                    </workingDirectory>
+                </xsl:if>
+            </CmdInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="WriteDayClick">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>432</pd:x>
+        <pd:y>60</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <append>false</append>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayclickfile&#xA;)"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="$DayClick/CmdOutputWithActivityOutput/output[1]"/>
+                </textContent>
+            </ns:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="WriteDayConversion">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>568</pd:x>
+        <pd:y>61</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <append>false</append>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayconversionfile&#xA;)"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="$DayConversion/CmdOutputWithActivityOutput/output[1]"/>
+                </textContent>
+            </ns:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CreateDayConversion">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>182</pd:x>
+        <pd:y>300</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <append>false</append>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayconversionfile&#xA;)"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="&quot;offer_id,n_id,normal,rm,duplicated&#xA;&quot;"/>
+                </textContent>
+            </ns:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CreateDayClick">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>187</pd:x>
+        <pd:y>71</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <append>false</append>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayclickfile&#xA;)"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="&quot;offer_id,n_id,click&#xA;&quot;"/>
+                </textContent>
+            </ns:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ExistClick">
+        <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
+        <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
+        <pd:x>81</pd:x>
+        <pd:y>186</pd:y>
+        <config>
+            <mode>only-files</mode>
+        </config>
+        <pd:inputBindings>
+            <ns:ListFilesActivityConfig>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayclickfile&#xA;)"/>
+                </fileName>
+            </ns:ListFilesActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ExistConversion">
+        <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
+        <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
+        <pd:x>183</pd:x>
+        <pd:y>186</pd:y>
+        <config>
+            <mode>only-files</mode>
+        </config>
+        <pd:inputBindings>
+            <ns:ListFilesActivityConfig>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$Start/root/workfolder,&#xA;$Start/root/dayconversionfile&#xA;)"/>
+                </fileName>
+            </ns:ListFilesActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="DayClick_LF">
+        <pd:type>com.tibco.plugin.cmdexec.CmdExecActivity</pd:type>
+        <pd:resourceType>ae.activities.CmdExecActivity</pd:resourceType>
+        <pd:x>312</pd:x>
+        <pd:y>71</pd:y>
+        <config>
+            <outputToString>true</outputToString>
+            <lineSplit>None</lineSplit>
+        </config>
+        <pd:inputBindings>
+            <CmdInput>
+                <command>
+                    <xsl:value-of select="concat(&#xA;&quot;E:\SoftWares\Tools\cmder\vendor\git-for-windows\usr\bin\unix2dos.exe&quot;,&#xA;&quot; &quot;,&#xA;$Start/root/dayclickfile&#xA;)"/>
+                </command>
+                <xsl:if test="$Start/root/workfolder">
+                    <workingDirectory>
+                        <xsl:value-of select="$Start/root/workfolder"/>
+                    </workingDirectory>
+                </xsl:if>
+            </CmdInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="DayConversion_LF">
+        <pd:type>com.tibco.plugin.cmdexec.CmdExecActivity</pd:type>
+        <pd:resourceType>ae.activities.CmdExecActivity</pd:resourceType>
+        <pd:x>322</pd:x>
+        <pd:y>303</pd:y>
+        <config>
+            <outputToString>true</outputToString>
+            <lineSplit>None</lineSplit>
+        </config>
+        <pd:inputBindings>
+            <CmdInput>
+                <command>
+                    <xsl:value-of select="concat(&#xA;&quot;E:\SoftWares\Tools\cmder\vendor\git-for-windows\usr\bin\unix2dos.exe&quot;,&#xA;&quot; &quot;,&#xA;$Start/root/dayconversionfile&#xA;)"/>
+                </command>
+                <xsl:if test="$Start/root/workfolder">
+                    <workingDirectory>
+                        <xsl:value-of select="$Start/root/workfolder"/>
+                    </workingDirectory>
+                </xsl:if>
+            </CmdInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>ExistClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>DayClick</pd:from>
+        <pd:to>DayConversion</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>DayConversion</pd:from>
+        <pd:to>WriteDayClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>WriteDayClick</pd:from>
+        <pd:to>WriteDayConversion</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>WriteDayConversion</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateDayConversion</pd:from>
+        <pd:to>DayConversion_LF</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistClick</pd:from>
+        <pd:to>ExistConversion</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistConversion</pd:from>
+        <pd:to>CreateDayClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>not($ExistClick/ns:ListFilesActivityOutput/files/fileInfo[1]/fullName)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateDayClick</pd:from>
+        <pd:to>DayClick_LF</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistConversion</pd:from>
+        <pd:to>CreateDayConversion</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>not($ExistConversion/ns:ListFilesActivityOutput/files/fileInfo[1]/fullName)</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistConversion</pd:from>
+        <pd:to>DayClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>DayClick_LF</pd:from>
+        <pd:to>DayClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>DayConversion_LF</pd:from>
+        <pd:to>DayClick</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

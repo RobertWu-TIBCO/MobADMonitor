@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/file">
+    <pd:name>ReportFile/GenFilesByDayAPI.process</pd:name>
+    <pd:startName>HTTP Receiver</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="HTTP Receiver">
+        <pd:type>com.tibco.plugin.http.HTTPEventSource</pd:type>
+        <pd:resourceType>httppalette.httpEventSource</pd:resourceType>
+        <pd:x>55</pd:x>
+        <pd:y>39</pd:y>
+        <config>
+            <outputMode>String</outputMode>
+            <defaultEncoding>ISO8859_1</defaultEncoding>
+            <inputOutputVersion>5.3.0</inputOutputVersion>
+            <newMimeSupport>true</newMimeSupport>
+            <sharedChannel>/ReportFile/GenFile.sharedhttp</sharedChannel>
+            <parsePostData>true</parsePostData>
+            <customField>
+                <row>
+                    <attribute>day</attribute>
+                    <attributeType>string</attributeType>
+                    <attributeCard>optional</attributeCard>
+                </row>
+                <row>
+                    <attribute>force</attribute>
+                    <attributeType>string</attributeType>
+                    <attributeCard>optional</attributeCard>
+                </row>
+                <row>
+                    <attribute>hourneed</attribute>
+                    <attributeType>string</attributeType>
+                    <attributeCard>optional</attributeCard>
+                </row>
+            </customField>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Accept" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Charset" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Encoding" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Length" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Connection" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>498</pd:endX>
+    <pd:endY>171</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1484825581791</pd:targetNamespace>
+    <pd:activity name="Send HTTP Response">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>177</pd:x>
+        <pd:y>74</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>HTTP Receiver</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="concat(&#xA;&quot;your request to generate report file is processing and would finish within 5 minutes as it is run for the first time for day : &quot;,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day&#xA;)"/>
+                </asciiContent>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GenDayFile">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>289</pd:x>
+        <pd:y>77</pd:y>
+        <config>
+            <processName>/ReportFile/DayMap_GenMapFiles.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:if test="$HTTP-Receiver/ProcessStarterOutput/parameters/day">
+                    <day>
+                        <xsl:value-of select="$HTTP-Receiver/ProcessStarterOutput/parameters/day"/>
+                    </day>
+                </xsl:if>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="List Files">
+        <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
+        <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
+        <pd:description>change file name from price to merge</pd:description>
+        <pd:x>53</pd:x>
+        <pd:y>177</pd:y>
+        <config>
+            <mode>files-and-directories</mode>
+        </config>
+        <pd:inputBindings>
+            <ns2:ListFilesActivityConfig>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day,&#xA;&quot;\report.merge.log_&quot;,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </fileName>
+            </ns2:ListFilesActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Send-HTTP-Response-1">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>286</pd:x>
+        <pd:y>176</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>HTTP Receiver</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="&quot;ok&quot;"/>
+                </asciiContent>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendAlertMail">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>420</pd:x>
+        <pd:y>75</pd:y>
+        <config>
+            <processName>/AlertEmail/SendAlertMail.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <MailStart>
+                <subject>
+                    <xsl:value-of select="concat(&#xA;&quot;Generating Day Report File Completes for day : &quot; ,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day&#xA;)"/>
+                </subject>
+                <content>
+                    <xsl:value-of select="concat(&#xA;&quot; Day Report File Has Generated for day :  &quot;,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day&#xA;)"/>
+                </content>
+            </MailStart>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SendAlertMail-1">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>316</pd:x>
+        <pd:y>259</pd:y>
+        <config>
+            <processName>/AlertEmail/SendAlertMail.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <MailStart>
+                <subject>
+                    <xsl:value-of select="concat(&#xA;&quot;HTTP Day Gen Report File Fails for day : &quot;,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day&#xA;)"/>
+                </subject>
+                <content>
+                    <xsl:value-of select="concat(&#xA;&quot;HTTP Day Gen Report File Fails for day : &quot;,&#xA;$HTTP-Receiver/ProcessStarterOutput/parameters/day&#xA;)"/>
+                </content>
+            </MailStart>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>158</pd:x>
+        <pd:y>258</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Send HTTP Response</pd:from>
+        <pd:to>GenDayFile</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GenDayFile</pd:from>
+        <pd:to>SendAlertMail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>HTTP Receiver</pd:from>
+        <pd:to>List Files</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>List Files</pd:from>
+        <pd:to>Send HTTP Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>List Files</pd:from>
+        <pd:to>Send-HTTP-Response-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$List-Files/ns2:ListFilesActivityOutput/files/fileInfo[1]/fullName</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send-HTTP-Response-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlertMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>SendAlertMail-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlertMail-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send-HTTP-Response-1</pd:from>
+        <pd:to>GenDayFile</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$HTTP-Receiver/ProcessStarterOutput/parameters/force="1"</pd:xpath>
+    </pd:transition>
+</pd:ProcessDefinition>

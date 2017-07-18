@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/json" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <pd:name>FrontJSONUI/SampleRedis/HttpCreateRedisCamp.process</pd:name>
+    <pd:startName>CreateCamp</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="CreateCamp">
+        <pd:type>com.tibco.plugin.http.HTTPEventSource</pd:type>
+        <pd:resourceType>httppalette.httpEventSource</pd:resourceType>
+        <pd:x>92</pd:x>
+        <pd:y>144</pd:y>
+        <config>
+            <outputMode>String</outputMode>
+            <defaultEncoding>ISO8859_1</defaultEncoding>
+            <inputOutputVersion>5.3.0</inputOutputVersion>
+            <newMimeSupport>true</newMimeSupport>
+            <sharedChannel>/FrontJSONUI/SampleRedis/CreateCamp.sharedhttp</sharedChannel>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Accept" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Charset" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Encoding" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Length" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Connection" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>470</pd:endX>
+    <pd:endY>43</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1482899693897</pd:targetNamespace>
+    <pd:activity name="CreateCampProcess">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>89</pd:x>
+        <pd:y>258</pd:y>
+        <config>
+            <processName>/FrontJSONUI/SampleRedis/RedisUseDBSet _CampaignSwitch.process</processName>
+            <processNameXPath/>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:if test="$CreateCamp/ProcessStarterOutput/RequestURI">
+                    <campaign_id>
+                        <xsl:value-of select="substring-after($CreateCamp/ProcessStarterOutput/RequestURI, &quot;campid=&quot;)"/>
+                    </campaign_id>
+                </xsl:if>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Send HTTP Response">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>473</pd:x>
+        <pd:y>254</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>CreateCamp</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="concat(&#xA;&quot;campaign created with below details : &lt;p>&quot;,&#xA;$Render-JSON/ns:ActivityOutputClass/jsonString,&#xA;$Render-JSON-AllDetails/ns:ActivityOutputClass/jsonString&#xA;)"/>
+                </asciiContent>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>591</pd:x>
+        <pd:y>175</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Send-HTTP-Response-1">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>591</pd:x>
+        <pd:y>44</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>CreateCamp</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="$Catch/exceptiondata/*"/>
+                </asciiContent>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Send-HTTP-Response-2">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>91</pd:x>
+        <pd:y>41</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>CreateCamp</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="&quot;only allow to create campaign&quot;"/>
+                </asciiContent>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render JSON">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>273</pd:x>
+        <pd:y>255</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityInputEditor>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="details" minOccurs="0">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="campaign_status" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_rm" type="xsd:double" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_t" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_c" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_n" type="xsd:double" minOccurs="0"/>
+                                        <xsd:element name="campaign_tl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_pl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="offer_click_tl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="notinsert" type="xsd:boolean" minOccurs="0"/>
+                                        <xsd:element name="appid" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="seat" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="creative_id" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="picpath" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaignswitch" minOccurs="0">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="campaignrate" minOccurs="0">
+                                                        <xsd:complexType>
+                                                            <xsd:sequence>
+                                                                <xsd:element name="campaignrate1" type="xsd:int" minOccurs="0"/>
+                                                                <xsd:element name="campaignrate2" type="xsd:int" minOccurs="0"/>
+                                                                <xsd:element name="campaignrate3" type="xsd:int" minOccurs="0"/>
+                                                            </xsd:sequence>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                    <xsd:element name="campaigndetail" minOccurs="0">
+                                                        <xsd:complexType>
+                                                            <xsd:sequence>
+                                                                <xsd:element name="offerid-nid1" type="xsd:string" minOccurs="0"/>
+                                                                <xsd:element name="offerid-nid2" type="xsd:string" minOccurs="0"/>
+                                                                <xsd:element name="offerid-nid3" type="xsd:string" minOccurs="0"/>
+                                                            </xsd:sequence>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="n_pl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="product_lp" type="xsd:string" minOccurs="0"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <root>
+                    <xsl:for-each select="$CreateCampProcess/root">
+                        <details>
+                            <xsl:if test="campaign_id">
+                                <campaign_id>
+                                    <xsl:value-of select="campaign_id"/>
+                                </campaign_id>
+                            </xsl:if>
+                            <xsl:if test="offer_id">
+                                <offer_id>
+                                    <xsl:value-of select="offer_id"/>
+                                </offer_id>
+                            </xsl:if>
+                            <xsl:if test="n_id">
+                                <n_id>
+                                    <xsl:value-of select="n_id"/>
+                                </n_id>
+                            </xsl:if>
+                            <xsl:if test="campaign_status">
+                                <campaign_status>
+                                    <xsl:value-of select="campaign_status"/>
+                                </campaign_status>
+                            </xsl:if>
+                            <xsl:if test="campaign_rm">
+                                <campaign_rm>
+                                    <xsl:value-of select="campaign_rm"/>
+                                </campaign_rm>
+                            </xsl:if>
+                            <xsl:if test="campaign_expend_t">
+                                <campaign_expend_t>
+                                    <xsl:value-of select="campaign_expend_t"/>
+                                </campaign_expend_t>
+                            </xsl:if>
+                            <xsl:if test="campaign_expend_c">
+                                <campaign_expend_c>
+                                    <xsl:value-of select="campaign_expend_c"/>
+                                </campaign_expend_c>
+                            </xsl:if>
+                            <xsl:if test="campaign_expend_n">
+                                <campaign_expend_n>
+                                    <xsl:value-of select="campaign_expend_n"/>
+                                </campaign_expend_n>
+                            </xsl:if>
+                            <xsl:if test="campaign_tl">
+                                <campaign_tl>
+                                    <xsl:value-of select="campaign_tl"/>
+                                </campaign_tl>
+                            </xsl:if>
+                            <xsl:if test="campaign_pl">
+                                <campaign_pl>
+                                    <xsl:value-of select="campaign_pl"/>
+                                </campaign_pl>
+                            </xsl:if>
+                            <xsl:if test="offer_click_tl">
+                                <offer_click_tl>
+                                    <xsl:value-of select="offer_click_tl"/>
+                                </offer_click_tl>
+                            </xsl:if>
+                            <xsl:if test="notinsert">
+                                <notinsert>
+                                    <xsl:value-of select="notinsert"/>
+                                </notinsert>
+                            </xsl:if>
+                            <xsl:if test="appid">
+                                <appid>
+                                    <xsl:value-of select="appid"/>
+                                </appid>
+                            </xsl:if>
+                            <xsl:if test="seat">
+                                <seat>
+                                    <xsl:value-of select="seat"/>
+                                </seat>
+                            </xsl:if>
+                            <xsl:if test="creative_id">
+                                <creative_id>
+                                    <xsl:value-of select="creative_id"/>
+                                </creative_id>
+                            </xsl:if>
+                            <xsl:if test="picpath">
+                                <picpath>
+                                    <xsl:value-of select="picpath"/>
+                                </picpath>
+                            </xsl:if>
+                            <xsl:for-each select="campaignswitch">
+                                <campaignswitch>
+                                    <xsl:for-each select="campaignrate">
+                                        <campaignrate>
+                                            <xsl:if test="campaignrate1">
+                                                <campaignrate1>
+                                                    <xsl:value-of select="campaignrate1"/>
+                                                </campaignrate1>
+                                            </xsl:if>
+                                            <xsl:if test="campaignrate2">
+                                                <campaignrate2>
+                                                    <xsl:value-of select="campaignrate2"/>
+                                                </campaignrate2>
+                                            </xsl:if>
+                                            <xsl:if test="campaignrate3">
+                                                <campaignrate3>
+                                                    <xsl:value-of select="campaignrate3"/>
+                                                </campaignrate3>
+                                            </xsl:if>
+                                        </campaignrate>
+                                    </xsl:for-each>
+                                    <xsl:for-each select="campaigndetail">
+                                        <campaigndetail>
+                                            <xsl:if test="offerid-nid1">
+                                                <offerid-nid1>
+                                                    <xsl:value-of select="offerid-nid1"/>
+                                                </offerid-nid1>
+                                            </xsl:if>
+                                            <xsl:if test="offerid-nid2">
+                                                <offerid-nid2>
+                                                    <xsl:value-of select="offerid-nid2"/>
+                                                </offerid-nid2>
+                                            </xsl:if>
+                                            <xsl:if test="offerid-nid3">
+                                                <offerid-nid3>
+                                                    <xsl:value-of select="offerid-nid3"/>
+                                                </offerid-nid3>
+                                            </xsl:if>
+                                        </campaigndetail>
+                                    </xsl:for-each>
+                                </campaignswitch>
+                            </xsl:for-each>
+                            <xsl:if test="n_pl">
+                                <n_pl>
+                                    <xsl:value-of select="n_pl"/>
+                                </n_pl>
+                            </xsl:if>
+                            <xsl:if test="product_lp">
+                                <product_lp>
+                                    <xsl:value-of select="product_lp"/>
+                                </product_lp>
+                            </xsl:if>
+                        </details>
+                    </xsl:for-each>
+                </root>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="UpdateAllCampToRedis">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>237</pd:x>
+        <pd:y>142</pd:y>
+        <config>
+            <processName>/FrontJSONUI/AutoRefreshCampToRedis/AutoRefreshCampToRedis.process</processName>
+            <processNameXPath/>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <allupdate>
+                    <xsl:value-of select="1"/>
+                </allupdate>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Render-JSON-AllDetails">
+        <pd:type>com.tibco.plugin.json.activities.JSONRenderActivity</pd:type>
+        <pd:resourceType>ae.activities.JSONRenderActivity</pd:resourceType>
+        <pd:x>390</pd:x>
+        <pd:y>142</pd:y>
+        <config>
+            <SchemaType>xsdType</SchemaType>
+            <BadgerfishCheck>false</BadgerfishCheck>
+            <ActivityInputEditor>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="details" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                                        <xsd:element name="campaign_status" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_rm" type="xsd:double" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_t" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_c" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_expend_n" type="xsd:double" minOccurs="0"/>
+                                        <xsd:element name="campaign_tl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaign_pl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="offer_click_tl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="notinsert" type="xsd:boolean" minOccurs="0"/>
+                                        <xsd:element name="appid" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="seat" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="creative_id" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="picpath" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="campaignswitch" minOccurs="0">
+                                            <xsd:complexType>
+                                                <xsd:sequence>
+                                                    <xsd:element name="campaignrate" minOccurs="0">
+                                                        <xsd:complexType>
+                                                            <xsd:sequence>
+                                                                <xsd:element name="campaignrate1" type="xsd:int" minOccurs="0"/>
+                                                                <xsd:element name="campaignrate2" type="xsd:int" minOccurs="0"/>
+                                                                <xsd:element name="campaignrate3" type="xsd:int" minOccurs="0"/>
+                                                            </xsd:sequence>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                    <xsd:element name="campaigndetail" minOccurs="0">
+                                                        <xsd:complexType>
+                                                            <xsd:sequence>
+                                                                <xsd:element name="offerid-nid1" type="xsd:string" minOccurs="0"/>
+                                                                <xsd:element name="offerid-nid2" type="xsd:string" minOccurs="0"/>
+                                                                <xsd:element name="offerid-nid3" type="xsd:string" minOccurs="0"/>
+                                                            </xsd:sequence>
+                                                        </xsd:complexType>
+                                                    </xsd:element>
+                                                </xsd:sequence>
+                                            </xsd:complexType>
+                                        </xsd:element>
+                                        <xsd:element name="n_pl" type="xsd:string" minOccurs="0"/>
+                                        <xsd:element name="product_lp" type="xsd:string" minOccurs="0"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </ActivityInputEditor>
+        </config>
+        <pd:inputBindings>
+            <ns:ActivityInputClass>
+                <xsl:copy-of select="$UpdateAllCampToRedis/root"/>
+            </ns:ActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>CreateCamp</pd:from>
+        <pd:to>CreateCampProcess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>contains($CreateCamp/ProcessStarterOutput/RequestURI, "campid=") and substring-after($CreateCamp/ProcessStarterOutput/RequestURI, "campid=")!="all"</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateCampProcess</pd:from>
+        <pd:to>Render JSON</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send HTTP Response</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Send-HTTP-Response-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send-HTTP-Response-1</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateCamp</pd:from>
+        <pd:to>Send-HTTP-Response-2</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send-HTTP-Response-2</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render JSON</pd:from>
+        <pd:to>Send HTTP Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>UpdateAllCampToRedis</pd:from>
+        <pd:to>Render-JSON-AllDetails</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Render-JSON-AllDetails</pd:from>
+        <pd:to>Send HTTP Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateCamp</pd:from>
+        <pd:to>UpdateAllCampToRedis</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>substring-after($CreateCamp/ProcessStarterOutput/RequestURI, "campid=")="all"</pd:xpath>
+    </pd:transition>
+</pd:ProcessDefinition>

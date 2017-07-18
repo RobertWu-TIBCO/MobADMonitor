@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file">
+    <pd:name>ReportFile/FormatDayClickConversion_bak.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>450</pd:endX>
+    <pd:endY>64</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1484815290557</pd:targetNamespace>
+    <pd:activity name="Write File">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>299</pd:x>
+        <pd:y>63</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+        </config>
+        <pd:inputBindings>
+            <ns:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="&quot;E:\SoftWares\Project\log\bakfile\crlf.txt&quot;"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="concat(&#xA;&quot;why crlf&quot;&#xA;,&#xA;&quot;&#xA;&quot;,&#xA;&quot;test&quot;,&#xA;$Java-Code/javaCodeActivityOutput/lf&#xA;)"/>
+                </textContent>
+            </ns:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Java Code">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>224</pd:x>
+        <pd:y>172</pd:y>
+        <config>
+            <fullsource>package ReportFile.FormatDayClickConversion;
+import java.util.*;
+import java.io.*;
+public class FormatDayClickConversionJavaCode{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String lf = "";
+	public String getlf() {
+		return lf;
+	}
+	public void setlf(String val) {
+		lf = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public FormatDayClickConversionJavaCode() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	Out : String lf
+* Available Variables: DO NOT MODIFY *****/
+
+lf=System.getProperty("line.separator");}
+}
+</fullsource>
+            <fileName>FormatDayClickConversionJavaCode</fileName>
+            <packageName>ReportFile.FormatDayClickConversion</packageName>
+            <outputData>
+                <row>
+                    <fieldName>lf</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>FormatDayClickConversionJavaCode</name>
+                    <byteCode>yv66vgAAADQAIwkABgAXCgAHABgIABkIABoKABsAHAcAHQcAHgEAAmxmAQASTGphdmEvbGFuZy9TdHJpbmc7AQAFZ2V0bGYBABQoKUxqYXZhL2xhbmcvU3RyaW5nOwEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAAVzZXRsZgEAFShMamF2YS9sYW5nL1N0cmluZzspVgEABjxpbml0PgEAAygpVgEABmludm9rZQEACkV4Y2VwdGlvbnMHAB8BAApTb3VyY2VGaWxlAQAlRm9ybWF0RGF5Q2xpY2tDb252ZXJzaW9uSmF2YUNvZGUuamF2YQwACAAJDAAQABEBAAABAA5saW5lLnNlcGFyYXRvcgcAIAwAIQAiAQBEUmVwb3J0RmlsZS9Gb3JtYXREYXlDbGlja0NvbnZlcnNpb24vRm9ybWF0RGF5Q2xpY2tDb252ZXJzaW9uSmF2YUNvZGUBABBqYXZhL2xhbmcvT2JqZWN0AQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAEGphdmEvbGFuZy9TeXN0ZW0BAAtnZXRQcm9wZXJ0eQEAJihMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmc7ACEABgAHAAAAAQAEAAgACQAAAAQAAQAKAAsAAQAMAAAAHQABAAEAAAAFKrQAAbAAAAABAA0AAAAGAAEAAAAIAAEADgAPAAEADAAAACIAAgACAAAABiortQABsQAAAAEADQAAAAoAAgAAAAsABQAMAAEAEAARAAEADAAAACsAAgABAAAACyq3AAIqEgO1AAGxAAAAAQANAAAADgADAAAADgAEAAYACgAPAAEAEgARAAIADAAAACIAAgABAAAACioSBLgABbUAAbEAAAABAA0AAAAGAAEAAAAVABMAAAAEAAEAFAABABUAAAACABY=</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Java Code</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Write File</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Java Code</pd:from>
+        <pd:to>Write File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

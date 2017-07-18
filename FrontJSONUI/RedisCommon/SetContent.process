@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>FrontJSONUI/RedisCommon/SetContent.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startDescription>notinsert =1 means to end directly
+notinsert = -1 means this is ssp and redis key contains campaign_id
+notinsert =0 by default means redis key contains offerid-nid and used 
+for campaign switch</pd:startDescription>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="campaign_status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_rm" type="xsd:double" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_t" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_c" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_n" type="xsd:double" minOccurs="0"/>
+                    <xsd:element name="campaign_tl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_pl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="offer_click_tl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="notinsert" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="appid" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="seat" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="creative_id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="picpath" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaignswitch" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="campaignrate" minOccurs="0">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="campaignrate1" type="xsd:int" minOccurs="0"/>
+                                            <xsd:element name="campaignrate2" type="xsd:int" minOccurs="0"/>
+                                            <xsd:element name="campaignrate3" type="xsd:int" minOccurs="0"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="campaigndetail" minOccurs="0">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="offerid-nid1" type="xsd:string" minOccurs="0"/>
+                                            <xsd:element name="offerid-nid2" type="xsd:string" minOccurs="0"/>
+                                            <xsd:element name="offerid-nid3" type="xsd:string" minOccurs="0"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="n_pl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="product_lp" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings>
+        <xsl:copy-of select="$Start/root"/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="campaign_status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_rm" type="xsd:double" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_t" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_c" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_expend_n" type="xsd:double" minOccurs="0"/>
+                    <xsd:element name="campaign_tl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaign_pl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="offer_click_tl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="notinsert" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="appid" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="seat" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="creative_id" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="picpath" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="campaignswitch" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="campaignrate" minOccurs="0">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="campaignrate1" type="xsd:int" minOccurs="0"/>
+                                            <xsd:element name="campaignrate2" type="xsd:int" minOccurs="0"/>
+                                            <xsd:element name="campaignrate3" type="xsd:int" minOccurs="0"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="campaigndetail" minOccurs="0">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="offerid-nid1" type="xsd:string" minOccurs="0"/>
+                                            <xsd:element name="offerid-nid2" type="xsd:string" minOccurs="0"/>
+                                            <xsd:element name="offerid-nid3" type="xsd:string" minOccurs="0"/>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="n_pl" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="product_lp" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>290</pd:endX>
+    <pd:endY>197</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1481529034665</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>107</pd:x>
+        <pd:y>265</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>236</pd:x>
+        <pd:y>263</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:group name="Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>233</pd:x>
+        <pd:y>0</pd:y>
+        <pd:width>138</pd:width>
+        <pd:height>140</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>errorLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>err</pd:indexSlot>
+            <pd:errorCondition>$err &gt; 2</pd:errorCondition>
+            <pd:suspendAfterErrorRetry>false</pd:suspendAfterErrorRetry>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>SetToRedis</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>SetToRedis</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="SetToRedis">
+            <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+            <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+            <pd:x>291</pd:x>
+            <pd:y>64</pd:y>
+            <config>
+                <fileName>SetContentSetToRedis</fileName>
+                <packageName>FrontJSONUI.RedisCommon.SetContent</packageName>
+                <fullsource>package FrontJSONUI.RedisCommon.SetContent;
+import java.util.*;
+import java.io.*;
+import redis.clients.jedis.Jedis;
+@SuppressWarnings("unchecked")
+public class SetContentSetToRedis{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String allids = "";
+	protected String campaign_status = "";
+	protected String campaign_rm = "";
+	protected String campaign_expend_t = "";
+	protected String campaign_expend_c = "";
+	protected String campaign_expend_n = "";
+	protected String campaign_tl = "";
+	protected String campaign_pl = "";
+	protected String offer_click_tl = "";
+	protected String campaign_id = "";
+	protected String offer_id = "";
+	protected String n_id = "";
+	protected String redis_host = "";
+	protected int redis_port = 0;
+	protected String redis_pass = "";
+	protected String appid = "";
+	protected String seat = "";
+	protected String creative_id = "";
+	protected String picpath = "";
+	protected String campaignrate1 = "";
+	protected String campaignrate2 = "";
+	protected String campaignrate3 = "";
+	protected String offeridnid1 = "";
+	protected String offeridnid2 = "";
+	protected String offeridnid3 = "";
+	protected String n_pl = "";
+	protected String product_lp = "";
+	public String getallids() {
+		return allids;
+	}
+	public void setallids(String val) {
+		allids = val;
+	}
+	public String getcampaign_status() {
+		return campaign_status;
+	}
+	public void setcampaign_status(String val) {
+		campaign_status = val;
+	}
+	public String getcampaign_rm() {
+		return campaign_rm;
+	}
+	public void setcampaign_rm(String val) {
+		campaign_rm = val;
+	}
+	public String getcampaign_expend_t() {
+		return campaign_expend_t;
+	}
+	public void setcampaign_expend_t(String val) {
+		campaign_expend_t = val;
+	}
+	public String getcampaign_expend_c() {
+		return campaign_expend_c;
+	}
+	public void setcampaign_expend_c(String val) {
+		campaign_expend_c = val;
+	}
+	public String getcampaign_expend_n() {
+		return campaign_expend_n;
+	}
+	public void setcampaign_expend_n(String val) {
+		campaign_expend_n = val;
+	}
+	public String getcampaign_tl() {
+		return campaign_tl;
+	}
+	public void setcampaign_tl(String val) {
+		campaign_tl = val;
+	}
+	public String getcampaign_pl() {
+		return campaign_pl;
+	}
+	public void setcampaign_pl(String val) {
+		campaign_pl = val;
+	}
+	public String getoffer_click_tl() {
+		return offer_click_tl;
+	}
+	public void setoffer_click_tl(String val) {
+		offer_click_tl = val;
+	}
+	public String getcampaign_id() {
+		return campaign_id;
+	}
+	public void setcampaign_id(String val) {
+		campaign_id = val;
+	}
+	public String getoffer_id() {
+		return offer_id;
+	}
+	public void setoffer_id(String val) {
+		offer_id = val;
+	}
+	public String getn_id() {
+		return n_id;
+	}
+	public void setn_id(String val) {
+		n_id = val;
+	}
+	public String getredis_host() {
+		return redis_host;
+	}
+	public void setredis_host(String val) {
+		redis_host = val;
+	}
+	public int getredis_port() {
+		return redis_port;
+	}
+	public void setredis_port(int val) {
+		redis_port = val;
+	}
+	public String getredis_pass() {
+		return redis_pass;
+	}
+	public void setredis_pass(String val) {
+		redis_pass = val;
+	}
+	public String getappid() {
+		return appid;
+	}
+	public void setappid(String val) {
+		appid = val;
+	}
+	public String getseat() {
+		return seat;
+	}
+	public void setseat(String val) {
+		seat = val;
+	}
+	public String getcreative_id() {
+		return creative_id;
+	}
+	public void setcreative_id(String val) {
+		creative_id = val;
+	}
+	public String getpicpath() {
+		return picpath;
+	}
+	public void setpicpath(String val) {
+		picpath = val;
+	}
+	public String getcampaignrate1() {
+		return campaignrate1;
+	}
+	public void setcampaignrate1(String val) {
+		campaignrate1 = val;
+	}
+	public String getcampaignrate2() {
+		return campaignrate2;
+	}
+	public void setcampaignrate2(String val) {
+		campaignrate2 = val;
+	}
+	public String getcampaignrate3() {
+		return campaignrate3;
+	}
+	public void setcampaignrate3(String val) {
+		campaignrate3 = val;
+	}
+	public String getofferidnid1() {
+		return offeridnid1;
+	}
+	public void setofferidnid1(String val) {
+		offeridnid1 = val;
+	}
+	public String getofferidnid2() {
+		return offeridnid2;
+	}
+	public void setofferidnid2(String val) {
+		offeridnid2 = val;
+	}
+	public String getofferidnid3() {
+		return offeridnid3;
+	}
+	public void setofferidnid3(String val) {
+		offeridnid3 = val;
+	}
+	public String getn_pl() {
+		return n_pl;
+	}
+	public void setn_pl(String val) {
+		n_pl = val;
+	}
+	public String getproduct_lp() {
+		return product_lp;
+	}
+	public void setproduct_lp(String val) {
+		product_lp = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public SetContentSetToRedis() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String allids
+	In  : String campaign_status
+	In  : String campaign_rm
+	In  : String campaign_expend_t
+	In  : String campaign_expend_c
+	In  : String campaign_expend_n
+	In  : String campaign_tl
+	In  : String campaign_pl
+	In  : String offer_click_tl
+	In  : String campaign_id
+	In  : String offer_id
+	In  : String n_id
+	In  : String redis_host
+	In  : int redis_port
+	In  : String redis_pass
+	In  : String appid
+	In  : String seat
+	In  : String creative_id
+	In  : String picpath
+	In  : String campaignrate1
+	In  : String campaignrate2
+	In  : String campaignrate3
+	In  : String offeridnid1
+	In  : String offeridnid2
+	In  : String offeridnid3
+	In  : String n_pl
+	In  : String product_lp
+* Available Variables: DO NOT MODIFY *****/
+HashMap map= new HashMap();
+
+map.put("campaign_status",campaign_status);
+map.put("campaign_rm",campaign_rm);
+map.put("campaign_expend_t",campaign_expend_t);
+map.put("campaign_expend_c",campaign_expend_c);
+map.put("campaign_expend_n",campaign_expend_n);
+map.put("campaign_tl",campaign_tl);
+map.put("campaign_pl",campaign_pl);
+map.put("offer_click_tl",offer_click_tl);
+map.put("campaign_id",campaign_id);
+map.put("offer_id",offer_id);
+map.put("n_id",n_id);
+map.put("appid",appid);
+map.put("seat",seat);
+map.put("creative_id",creative_id);
+map.put("picpath",picpath);
+
+map.put("campaignrate1",campaignrate1);
+map.put("campaignrate2",campaignrate2);
+map.put("campaignrate3",campaignrate3);
+map.put("offeridnid1",offeridnid1);
+map.put("offeridnid2",offeridnid2);
+map.put("offeridnid3",offeridnid3);
+map.put("n_pl",n_pl);
+map.put("product_lp",product_lp);
+Jedis jedis = new Jedis(redis_host,redis_port,120000);
+jedis.auth(redis_pass);
+jedis.hmset(allids,map);
+jedis.disconnect();
+jedis = new Jedis("172.17.0.2",redis_port,10000);
+jedis.auth(redis_pass);
+jedis.hmset(allids,map);
+jedis.disconnect();
+}
+}
+</fullsource>
+                <inputData>
+                    <row>
+                        <fieldName>allids</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_status</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_rm</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_expend_t</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_expend_c</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_expend_n</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_tl</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_pl</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offer_click_tl</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offer_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>n_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_host</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_port</fieldName>
+                        <fieldType>int</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_pass</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>appid</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>seat</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>creative_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>picpath</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaignrate1</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaignrate2</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaignrate3</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offeridnid1</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offeridnid2</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offeridnid3</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>n_pl</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>product_lp</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                </inputData>
+                <byteCode>
+                    <class>
+                        <name>SetContentSetToRedis</name>
+                        <byteCode>yv66vgAAADQA0QkAPwChCQA/AKIJAD8AowkAPwCkCQA/AKUJAD8ApgkAPwCnCQA/AKgJAD8AqQkAPwCqCQA/AKsJAD8ArAkAPwCtCQA/AK4JAD8ArwkAPwCwCQA/ALEJAD8AsgkAPwCzCQA/ALQJAD8AtQkAPwC2CQA/ALcJAD8AuAkAPwC5CQA/ALoJAD8AuwoAQAC8CAC9BwC+CgAeALwIAEMKAB4AvwgARAgARQgARggARwgASAgASQgASggASwgATAgATQgAUggAUwgAVAgAVQgAVggAVwgAWAgAWQgAWggAWwgAXAgAXQcAwAMAAdTACgA4AMEKADgAwgoAOADDCgA4AMQIAMUHAMYHAMcBAAZhbGxpZHMBABJMamF2YS9sYW5nL1N0cmluZzsBAA9jYW1wYWlnbl9zdGF0dXMBAAtjYW1wYWlnbl9ybQEAEWNhbXBhaWduX2V4cGVuZF90AQARY2FtcGFpZ25fZXhwZW5kX2MBABFjYW1wYWlnbl9leHBlbmRfbgEAC2NhbXBhaWduX3RsAQALY2FtcGFpZ25fcGwBAA5vZmZlcl9jbGlja190bAEAC2NhbXBhaWduX2lkAQAIb2ZmZXJfaWQBAARuX2lkAQAKcmVkaXNfaG9zdAEACnJlZGlzX3BvcnQBAAFJAQAKcmVkaXNfcGFzcwEABWFwcGlkAQAEc2VhdAEAC2NyZWF0aXZlX2lkAQAHcGljcGF0aAEADWNhbXBhaWducmF0ZTEBAA1jYW1wYWlnbnJhdGUyAQANY2FtcGFpZ25yYXRlMwEAC29mZmVyaWRuaWQxAQALb2ZmZXJpZG5pZDIBAAtvZmZlcmlkbmlkMwEABG5fcGwBAApwcm9kdWN0X2xwAQAJZ2V0YWxsaWRzAQAUKClMamF2YS9sYW5nL1N0cmluZzsBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAJc2V0YWxsaWRzAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQASZ2V0Y2FtcGFpZ25fc3RhdHVzAQASc2V0Y2FtcGFpZ25fc3RhdHVzAQAOZ2V0Y2FtcGFpZ25fcm0BAA5zZXRjYW1wYWlnbl9ybQEAFGdldGNhbXBhaWduX2V4cGVuZF90AQAUc2V0Y2FtcGFpZ25fZXhwZW5kX3QBABRnZXRjYW1wYWlnbl9leHBlbmRfYwEAFHNldGNhbXBhaWduX2V4cGVuZF9jAQAUZ2V0Y2FtcGFpZ25fZXhwZW5kX24BABRzZXRjYW1wYWlnbl9leHBlbmRfbgEADmdldGNhbXBhaWduX3RsAQAOc2V0Y2FtcGFpZ25fdGwBAA5nZXRjYW1wYWlnbl9wbAEADnNldGNhbXBhaWduX3BsAQARZ2V0b2ZmZXJfY2xpY2tfdGwBABFzZXRvZmZlcl9jbGlja190bAEADmdldGNhbXBhaWduX2lkAQAOc2V0Y2FtcGFpZ25faWQBAAtnZXRvZmZlcl9pZAEAC3NldG9mZmVyX2lkAQAHZ2V0bl9pZAEAB3NldG5faWQBAA1nZXRyZWRpc19ob3N0AQANc2V0cmVkaXNfaG9zdAEADWdldHJlZGlzX3BvcnQBAAMoKUkBAA1zZXRyZWRpc19wb3J0AQAEKEkpVgEADWdldHJlZGlzX3Bhc3MBAA1zZXRyZWRpc19wYXNzAQAIZ2V0YXBwaWQBAAhzZXRhcHBpZAEAB2dldHNlYXQBAAdzZXRzZWF0AQAOZ2V0Y3JlYXRpdmVfaWQBAA5zZXRjcmVhdGl2ZV9pZAEACmdldHBpY3BhdGgBAApzZXRwaWNwYXRoAQAQZ2V0Y2FtcGFpZ25yYXRlMQEAEHNldGNhbXBhaWducmF0ZTEBABBnZXRjYW1wYWlnbnJhdGUyAQAQc2V0Y2FtcGFpZ25yYXRlMgEAEGdldGNhbXBhaWducmF0ZTMBABBzZXRjYW1wYWlnbnJhdGUzAQAOZ2V0b2ZmZXJpZG5pZDEBAA5zZXRvZmZlcmlkbmlkMQEADmdldG9mZmVyaWRuaWQyAQAOc2V0b2ZmZXJpZG5pZDIBAA5nZXRvZmZlcmlkbmlkMwEADnNldG9mZmVyaWRuaWQzAQAHZ2V0bl9wbAEAB3NldG5fcGwBAA1nZXRwcm9kdWN0X2xwAQANc2V0cHJvZHVjdF9scAEABjxpbml0PgEAAygpVgEABmludm9rZQEACkV4Y2VwdGlvbnMHAMgBAApTb3VyY2VGaWxlAQAZU2V0Q29udGVudFNldFRvUmVkaXMuamF2YQwAQQBCDABDAEIMAEQAQgwARQBCDABGAEIMAEcAQgwASABCDABJAEIMAEoAQgwASwBCDABMAEIMAE0AQgwATgBCDABPAFAMAFEAQgwA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</byteCode>
+                    </class>
+                </byteCode>
+            </config>
+            <pd:inputBindings>
+                <javaCodeActivityInput>
+                    <allids>
+                        <xsl:value-of select="if($Start/root/notinsert=-1) then &#xA;concat(&#xA;$Start/root/campaign_id,&#xA;&quot;-&quot;,&#xA; $Start/root/offer_id,&#xA;&quot;-&quot;,&#xA;$Start/root/n_id&#xA;)&#xA;else &#xA;concat(&#xA; $Start/root/offer_id,&#xA;&quot;-&quot;,&#xA;$Start/root/n_id&#xA;)"/>
+                    </allids>
+                    <xsl:if test="$Start/root/campaign_status">
+                        <campaign_status>
+                            <xsl:value-of select="$Start/root/campaign_status"/>
+                        </campaign_status>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_rm">
+                        <campaign_rm>
+                            <xsl:value-of select="$Start/root/campaign_rm"/>
+                        </campaign_rm>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_expend_t">
+                        <campaign_expend_t>
+                            <xsl:value-of select="$Start/root/campaign_expend_t"/>
+                        </campaign_expend_t>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_expend_c">
+                        <campaign_expend_c>
+                            <xsl:value-of select="$Start/root/campaign_expend_c"/>
+                        </campaign_expend_c>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_expend_n">
+                        <campaign_expend_n>
+                            <xsl:value-of select="$Start/root/campaign_expend_n"/>
+                        </campaign_expend_n>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_tl">
+                        <campaign_tl>
+                            <xsl:value-of select="$Start/root/campaign_tl"/>
+                        </campaign_tl>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_pl">
+                        <campaign_pl>
+                            <xsl:value-of select="$Start/root/campaign_pl"/>
+                        </campaign_pl>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/offer_click_tl">
+                        <offer_click_tl>
+                            <xsl:value-of select="$Start/root/offer_click_tl"/>
+                        </offer_click_tl>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaign_id">
+                        <campaign_id>
+                            <xsl:value-of select="$Start/root/campaign_id"/>
+                        </campaign_id>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/offer_id">
+                        <offer_id>
+                            <xsl:value-of select="$Start/root/offer_id"/>
+                        </offer_id>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/n_id">
+                        <n_id>
+                            <xsl:value-of select="$Start/root/n_id"/>
+                        </n_id>
+                    </xsl:if>
+                    <redis_host>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/Log/redishost"/>
+                    </redis_host>
+                    <redis_port>
+                        <xsl:value-of select="6379"/>
+                    </redis_port>
+                    <redis_pass>
+                        <xsl:value-of select="&quot;!VMD1kult&quot;"/>
+                    </redis_pass>
+                    <xsl:if test="$Start/root/appid">
+                        <appid>
+                            <xsl:value-of select="$Start/root/appid"/>
+                        </appid>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/seat">
+                        <seat>
+                            <xsl:value-of select="$Start/root/seat"/>
+                        </seat>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/creative_id">
+                        <creative_id>
+                            <xsl:value-of select="$Start/root/creative_id"/>
+                        </creative_id>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/picpath">
+                        <picpath>
+                            <xsl:value-of select="$Start/root/picpath"/>
+                        </picpath>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaignrate/campaignrate1">
+                        <campaignrate1>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaignrate/campaignrate1"/>
+                        </campaignrate1>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaignrate/campaignrate2">
+                        <campaignrate2>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaignrate/campaignrate2"/>
+                        </campaignrate2>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaignrate/campaignrate3">
+                        <campaignrate3>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaignrate/campaignrate3"/>
+                        </campaignrate3>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaigndetail/offerid-nid1">
+                        <offeridnid1>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaigndetail/offerid-nid1"/>
+                        </offeridnid1>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaigndetail/offerid-nid2">
+                        <offeridnid2>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaigndetail/offerid-nid2"/>
+                        </offeridnid2>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/campaignswitch/campaigndetail/offerid-nid3">
+                        <offeridnid3>
+                            <xsl:value-of select="$Start/root/campaignswitch/campaigndetail/offerid-nid3"/>
+                        </offeridnid3>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/n_pl">
+                        <n_pl>
+                            <xsl:value-of select="$Start/root/n_pl"/>
+                        </n_pl>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/product_lp">
+                        <product_lp>
+                            <xsl:value-of select="$Start/root/product_lp"/>
+                        </product_lp>
+                    </xsl:if>
+                </javaCodeActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/notinsert=1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Group</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,45 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>ClickLog</name>
+			<value>E:\SoftWares\Project\log\click\click.log</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1478361141272</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>ConversionLog</name>
+			<value>E:\SoftWares\Project\log\conversion\conversion.log</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1478361344468</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>clicktoconversion</name>
+			<value>E:\SoftWares\Project\log\clicktoconversion\</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1478361344491</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>redishost</name>
+			<value>127.0.0.1</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1484554242798</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>reportlog</name>
+			<value>E:\SoftWares\Project\log\report\</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1478596877479</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

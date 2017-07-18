@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/file">
+    <pd:name>ReportFile/DayPrice_MapToFile.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="day" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>38</pd:startX>
+    <pd:startY>52</pd:startY>
+    <pd:returnBindings>
+        <root/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endX>135</pd:endX>
+    <pd:endY>60</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1483599437572</pd:targetNamespace>
+    <pd:activity name="GetPrice_Offer">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>162</pd:x>
+        <pd:y>188</pd:y>
+        <config>
+            <processName>/ReportFile/DayPrice_ToMap.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <tablename>
+                    <xsl:value-of select="&quot;offer&quot;"/>
+                </tablename>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetPrice_Camp">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>291</pd:x>
+        <pd:y>189</pd:y>
+        <config>
+            <processName>/ReportFile/DayPrice_ToMap.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <tablename>
+                    <xsl:value-of select="&quot;campaign&quot;"/>
+                </tablename>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Write File">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>294</pd:x>
+        <pd:y>61</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns2:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.price.log_&quot;,&#xA;$Start/root/day,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="concat(&#xA;&quot;moffer_price&quot;,&#xA;&quot;@_@&quot;,&#xA;$GetPrice_Offer/root/priceStr,&#xA;&quot;&#xA;&quot;,&#xA;&quot;moffern_price&quot;,&#xA;&quot;@_@&quot;,&#xA;$GetPrice_Camp/root/priceStr&#xA;)"/>
+                </textContent>
+            </ns2:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ExistPrice">
+        <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
+        <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
+        <pd:x>35</pd:x>
+        <pd:y>191</pd:y>
+        <config>
+            <mode>only-files</mode>
+        </config>
+        <pd:inputBindings>
+            <ns2:ListFilesActivityConfig>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.price.log_&quot;,&#xA;$Start/root/day,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </fileName>
+            </ns2:ListFilesActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>384</pd:x>
+        <pd:y>112</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>539</pd:x>
+        <pd:y>112</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>GetPrice_Offer</pd:from>
+        <pd:to>GetPrice_Camp</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetPrice_Camp</pd:from>
+        <pd:to>Write File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Write File</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>ExistPrice</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistPrice</pd:from>
+        <pd:to>GetPrice_Offer</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistPrice</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$ExistPrice/ns2:ListFilesActivityOutput/files/fileInfo[1]/fullName</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="www.tibco.com/plugin/Sleep" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/jms">
+    <pd:name>AlertEmail/win_sendmail_conversion_error.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startX>26</pd:startX>
+    <pd:startY>34</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>450</pd:endX>
+    <pd:endY>64</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1477990647502</pd:targetNamespace>
+    <pd:activity name="SendMail">
+        <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
+        <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
+        <pd:x>189</pd:x>
+        <pd:y>60</pd:y>
+        <config>
+            <newMimeSupport>true</newMimeSupport>
+            <inputOutputVersion>5.2.0</inputOutputVersion>
+            <useSsl>false</useSsl>
+            <authenticate>true</authenticate>
+            <username>robertwu@91mobcastle.com</username>
+            <host>smtp.mxhichina.com:80</host>
+            <password>Tibco123</password>
+            <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002">
+                <ns0:strongCipherSuitesOnly>true</ns0:strongCipherSuitesOnly>
+                <ns0:cert isRef="true">/Level3Server/.folder</ns0:cert>
+            </ns0:ssl>
+            <InputHeaders>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InputHeaders>
+        </config>
+        <pd:inputBindings>
+            <ns:mailActivityInput>
+                <from>
+                    <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/from"/>
+                </from>
+                <to>
+                    <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/to"/>
+                </to>
+                <subject>
+                    <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/subject"/>
+                </subject>
+                <pfx:bodyElement>
+                    <bodyText>
+                        <xsl:value-of select="tib:concat-sequence-format($AllSendMail/AccumulatedOutput/ns1:ActivityOutput/Body/root,&quot;&#xA;&#xA;&quot;)"/>
+                    </bodyText>
+                </pfx:bodyElement>
+            </ns:mailActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="JMS Queue Sender">
+        <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
+        <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
+        <pd:x>455</pd:x>
+        <pd:y>186</pd:y>
+        <config>
+            <PermittedMessageType>XML Text</PermittedMessageType>
+            <SessionAttributes>
+                <transacted>false</transacted>
+                <acknowledgeMode>1</acknowledgeMode>
+                <maxSessions>1</maxSessions>
+                <destination>win_sendmail_conversion_error</destination>
+            </SessionAttributes>
+            <ConfigurableHeaders>
+                <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                <JMSExpiration>0</JMSExpiration>
+                <JMSPriority>4</JMSPriority>
+            </ConfigurableHeaders>
+            <ConnectionReference>/AlertEmail/JMS Connection.sharedjmscon</ConnectionReference>
+            <InDataxsdString>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="from" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="to" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="subject" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="body" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InDataxsdString>
+        </config>
+        <pd:inputBindings>
+            <ns1:ActivityInput>
+                <Body>
+                    <root>
+                        <from>
+                            <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/from"/>
+                        </from>
+                        <to>
+                            <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/to"/>
+                        </to>
+                        <subject>
+                            <xsl:value-of select="$Get-JMS-Queue-Message/ns1:ActivityOutput/Body/root/subject"/>
+                        </subject>
+                        <body>
+                            <xsl:value-of select="tib:concat-sequence-format($AllSendMail/AccumulatedOutput/ns1:ActivityOutput/Body/root,&quot;&#xA;&#xA;&quot;)"/>
+                        </body>
+                    </root>
+                </Body>
+            </ns1:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>590</pd:x>
+        <pd:y>186</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:group name="Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>1</pd:x>
+        <pd:y>135</pd:y>
+        <pd:width>305</pd:width>
+        <pd:height>155</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>repeat</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>index</pd:indexSlot>
+            <pd:outSlot>AllSendMail</pd:outSlot>
+            <pd:activityOutputName>Get JMS Queue Message</pd:activityOutputName>
+            <pd:repeatCondition>$index &gt; 5</pd:repeatCondition>
+            <pd:accumulateOutput>true</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>Get JMS Queue Message</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Get JMS Queue Message</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="Get JMS Queue Message">
+            <pd:type>com.tibco.plugin.jms.JMSQueueGetMessageActivity</pd:type>
+            <pd:resourceType>ae.activities.JMSQueueGetMessageActivity</pd:resourceType>
+            <pd:x>144</pd:x>
+            <pd:y>226</pd:y>
+            <config>
+                <PermittedMessageType>XML Text</PermittedMessageType>
+                <SessionAttributes>
+                    <transacted>false</transacted>
+                    <acknowledgeMode>1</acknowledgeMode>
+                    <maxSessions>1</maxSessions>
+                    <destination>win_sendmail_conversion_error11</destination>
+                </SessionAttributes>
+                <ConfigurableHeaders>
+                    <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                    <JMSExpiration>0</JMSExpiration>
+                    <JMSPriority>4</JMSPriority>
+                </ConfigurableHeaders>
+                <ConnectionReference>/AlertEmail/JMS Connection.sharedjmscon</ConnectionReference>
+                <OutDataxsdString>
+                    <xsd:element name="root">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="from" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="to" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="subject" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="body" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </OutDataxsdString>
+            </config>
+            <pd:inputBindings>
+                <ns1:ActivityInput/>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>SendMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>JMS Queue Sender</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JMS Queue Sender</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Group</pd:from>
+        <pd:to>SendMail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

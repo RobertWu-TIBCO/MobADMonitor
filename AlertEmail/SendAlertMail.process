@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://xmlns.tibco.com/body" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/mail" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>AlertEmail/SendAlertMail.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="MailStart">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="subject" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="content" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>393</pd:endX>
+    <pd:endY>114</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1477990647502</pd:targetNamespace>
+    <pd:activity name="SendMail">
+        <pd:type>com.tibco.plugin.mail.MailPubActivity</pd:type>
+        <pd:resourceType>ae.activities.MailActivityResource</pd:resourceType>
+        <pd:x>296</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <newMimeSupport>true</newMimeSupport>
+            <inputOutputVersion>5.2.0</inputOutputVersion>
+            <useSsl>false</useSsl>
+            <authenticate>true</authenticate>
+            <username>robertwu@91mobcastle.com</username>
+            <host>smtp.mxhichina.com:80</host>
+            <password>Tibco123</password>
+            <ns0:ssl xmlns:ns0="http://www.tibco.com/xmlns/aemeta/services/2002">
+                <ns0:strongCipherSuitesOnly>true</ns0:strongCipherSuitesOnly>
+                <ns0:cert isRef="true">/Level3Server/.folder</ns0:cert>
+            </ns0:ssl>
+            <InputHeaders>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </InputHeaders>
+        </config>
+        <pd:inputBindings>
+            <ns:mailActivityInput>
+                <from>
+                    <xsl:value-of select="&quot;robertwu@91mobcastle.com&quot;"/>
+                </from>
+                <to>
+                    <xsl:value-of select="&quot;1533661890@qq.com,wuyang19920118@163.com,robertwu@91mobcastle.com,wangwenjun@mobiexchanger.com&quot;"/>
+                </to>
+                <xsl:if test="$Start/MailStart/subject">
+                    <subject>
+                        <xsl:value-of select="$Start/MailStart/subject"/>
+                    </subject>
+                </xsl:if>
+                <pfx:bodyElement>
+                    <bodyText>
+                        <xsl:value-of select="$Start/MailStart/content"/>
+                    </bodyText>
+                </pfx:bodyElement>
+            </ns:mailActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>SendMail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>1=2</pd:xpath>
+    </pd:transition>
+</pd:ProcessDefinition>

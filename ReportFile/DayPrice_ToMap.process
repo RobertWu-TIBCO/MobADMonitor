@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>ReportFile/DayPrice_ToMap.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="tablename" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>107</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:if test="$StringToMap/javaCodeActivityOutput/pricestr">
+                <priceStr>
+                    <xsl:value-of select="$StringToMap/javaCodeActivityOutput/pricestr"/>
+                </priceStr>
+            </xsl:if>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="priceStr" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>450</pd:endX>
+    <pd:endY>64</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1483599437572</pd:targetNamespace>
+    <pd:activity name="StringToMap">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>335</pd:x>
+        <pd:y>67</pd:y>
+        <config>
+            <fileName>DayPrice_ToMapStringToMap</fileName>
+            <packageName>ReportFile.DayPrice_ToMap</packageName>
+            <fullsource>package ReportFile.DayPrice_ToMap;
+import java.util.*;
+import java.io.*;
+public class DayPrice_ToMapStringToMap{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String[] id = null;
+	protected String tablename = "";
+	protected String[] values = null;
+	protected String pricestr = "";
+	public String[] getid() {
+		return id;
+	}
+	public void setid(String[] val) {
+		id = val;
+	}
+	public String gettablename() {
+		return tablename;
+	}
+	public void settablename(String val) {
+		tablename = val;
+	}
+	public String[] getvalues() {
+		return values;
+	}
+	public void setvalues(String[] val) {
+		values = val;
+	}
+	public String getpricestr() {
+		return pricestr;
+	}
+	public void setpricestr(String val) {
+		pricestr = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public DayPrice_ToMapStringToMap() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String[] id
+	In  : String tablename
+	In  : String[] values
+	Out : String pricestr
+* Available Variables: DO NOT MODIFY *****/
+	Map&lt;String, String&gt; price = new HashMap&lt;String,String&gt;();
+	for(int i=0;i&lt;id.length;i++)
+{
+	price.put(id[i],values[i]);
+}
+	pricestr=price.toString();}
+
+public static Map&lt;String, String&gt; mapStringToMap(String str) {
+		str = str.substring(1, str.length() - 1);
+		String[] strs = str.split(", ");
+		Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();
+		for (String string : strs) {
+			String key = string.split("=")[0];
+			
+	        try {
+				String value = string.split("=")[1];
+				map.put(key, value);
+				
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		return map;
+	}
+}
+</fullsource>
+            <inputData>
+                <row>
+                    <fieldName>id</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>tablename</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>values</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+            </inputData>
+            <outputData>
+                <row>
+                    <fieldName>pricestr</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>DayPrice_ToMapStringToMap</name>
+                    <byteCode>yv66vgAAADQAVAkAEQA2CQARADcJABEAOAkAEQA5CgASADoIADsHADwKAAcAOgsAPQA+CgASAD8KAEAAQQoAQABCCABDCgBAAEQIAEUHAEYHAEcHAEgBAAJpZAEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAl0YWJsZW5hbWUBABJMamF2YS9sYW5nL1N0cmluZzsBAAZ2YWx1ZXMBAAhwcmljZXN0cgEABWdldGlkAQAVKClbTGphdmEvbGFuZy9TdHJpbmc7AQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEABXNldGlkAQAWKFtMamF2YS9sYW5nL1N0cmluZzspVgEADGdldHRhYmxlbmFtZQEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAMc2V0dGFibGVuYW1lAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQAJZ2V0dmFsdWVzAQAJc2V0dmFsdWVzAQALZ2V0cHJpY2VzdHIBAAtzZXRwcmljZXN0cgEABjxpbml0PgEAAygpVgEABmludm9rZQEADVN0YWNrTWFwVGFibGUHAEkBAApFeGNlcHRpb25zAQAObWFwU3RyaW5nVG9NYXABACMoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL3V0aWwvTWFwOwcASgcAFAcARgEACVNpZ25hdHVyZQEASShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvdXRpbC9NYXA8TGphdmEvbGFuZy9TdHJpbmc7TGphdmEvbGFuZy9TdHJpbmc7PjsBAApTb3VyY2VGaWxlAQAeRGF5UHJpY2VfVG9NYXBTdHJpbmdUb01hcC5qYXZhDAATABQMABUAFgwAFwAUDAAYABYMACcAKAEAAAEAEWphdmEvdXRpbC9IYXNoTWFwBwBJDABLAEwMAE0AIAcASgwATgBPDABQAFEBAAIsIAwAUgBTAQABPQEAE2phdmEvbGFuZy9FeGNlcHRpb24BADNSZXBvcnRGaWxlL0RheVByaWNlX1RvTWFwL0RheVByaWNlX1RvTWFwU3RyaW5nVG9NYXABABBqYXZhL2xhbmcvT2JqZWN0AQANamF2YS91dGlsL01hcAEAEGphdmEvbGFuZy9TdHJpbmcBAANwdXQBADgoTGphdmEvbGFuZy9PYmplY3Q7TGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvT2JqZWN0OwEACHRvU3RyaW5nAQAGbGVuZ3RoAQADKClJAQAJc3Vic3RyaW5nAQAWKElJKUxqYXZhL2xhbmcvU3RyaW5nOwEABXNwbGl0AQAnKExqYXZhL2xhbmcvU3RyaW5nOylbTGphdmEvbGFuZy9TdHJpbmc7ACEAEQASAAAABAAEABMAFAAAAAQAFQAWAAAABAAXABQAAAAEABgAFgAAAAsAAQAZABoAAQAbAAAAHQABAAEAAAAFKrQAAbAAAAABABwAAAAGAAEAAAALAAEAHQAeAAEAGwAAACIAAgACAAAABiortQABsQAAAAEAHAAAAAoAAgAAAA4ABQAPAAEAHwAgAAEAGwAAAB0AAQABAAAABSq0AAKwAAAAAQAcAAAABgABAAAAEQABACEAIgABABsAAAAiAAIAAgAAAAYqK7UAArEAAAABABwAAAAKAAIAAAAUAAUAFQABACMAGgABABsAAAAdAAEAAQAAAAUqtAADsAAAAAEAHAAAAAYAAQAAABcAAQAkAB4AAQAbAAAAIgACAAIAAAAGKiu1AAOxAAAAAQAcAAAACgACAAAAGgAFABsAAQAlACAAAQAbAAAAHQABAAEAAAAFKrQABLAAAAABABwAAAAGAAEAAAAdAAEAJgAiAAEAGwAAACIAAgACAAAABiortQAEsQAAAAEAHAAAAAoAAgAAACAABQAhAAEAJwAoAAEAGwAAAEcAAgABAAAAGyq3AAUqAbUAASoSBrUAAioBtQADKhIGtQAEsQAAAAEAHAAAABoABgAAACMABAAGAAkABwAPAAgAFAAJABoAJAABACkAKAACABsAAABvAAQAAwAAADW7AAdZtwAITAM9HCq0AAG+ogAcKyq0AAEcMiq0AAMcMrkACQMAV4QCAaf/4SortgAKtQAEsQAAAAIAHAAAABYABQAAACwACAAtABMALwAmAC0ALAAxACoAAAAMAAL9AAoHACsB+gAhACwAAAAEAAEAEAAJAC0ALgACABsAAADvAAQACQAAAGIqBCq2AAsEZLYADEsqEg22AA5MuwAHWbcACE0rTi2+NgQDNgUVBRUEogA4LRUFMjoGGQYSD7YADgMyOgcZBhIPtgAOBDI6CCwZBxkIuQAJAwBXpwAIOginAAOEBQGn/8cssAABADwAUgBVABAAAgAcAAAAMgAMAAAANAAMADUAEwA2ABsANwAxADgAPAA7AEcAPABSAEAAVQA+AFcAPwBaADcAYABCACoAAAA7AAT/ACQABgcALwcAMAcAKwcAMAEBAAD/ADAACAcALwcAMAcAKwcAMAEBBwAvBwAvAAEHADH5AAT4AAUAMgAAAAIAMwABADQAAAACADU=</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <xsl:for-each select="$GetCampPrice/unknownResultset/row">
+                    <xsl:if test="current()/column[5]/value">
+                        <id>
+                            <xsl:value-of select="current()/column[5]/value"/>
+                        </id>
+                    </xsl:if>
+                </xsl:for-each>
+                <xsl:if test="$Start/root/tablename">
+                    <tablename>
+                        <xsl:value-of select="$Start/root/tablename"/>
+                    </tablename>
+                </xsl:if>
+                <xsl:for-each select="$GetCampPrice/unknownResultset/row">
+                    <values>
+                        <xsl:value-of select="concat(&#xA;current()/column[1]/value,&#xA;&quot;-&quot;,&#xA;current()/column[2]/value,&#xA;&quot;-&quot;,&#xA;current()/column[3]/value&#xA;)"/>
+                    </values>
+                </xsl:for-each>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="GetCampPrice">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>213</pd:x>
+        <pd:y>65</pd:y>
+        <config>
+            <processName>/FrontJSONUI/Level3/Common_Sql.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <sql>
+                    <xsl:value-of select="concat(&#xA;&quot;select * from view_price_&quot;,&#xA;$Start/root/tablename&#xA;)"/>
+                </sql>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>83</pd:x>
+        <pd:y>163</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>306</pd:x>
+        <pd:y>168</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>GetCampPrice</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>GetCampPrice</pd:from>
+        <pd:to>StringToMap</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>StringToMap</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

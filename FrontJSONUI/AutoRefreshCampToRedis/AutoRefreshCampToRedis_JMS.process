@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>FrontJSONUI/AutoRefreshCampToRedis/AutoRefreshCampToRedis_JMS.process</pd:name>
+    <pd:startName>win_redis_update_camp_offer</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:for-each select="$redisdetails/AccumulatedOutput/root">
+                <details>
+                    <xsl:if test="campaign_id">
+                        <campaign_id>
+                            <xsl:value-of select="campaign_id"/>
+                        </campaign_id>
+                    </xsl:if>
+                    <xsl:if test="offer_id">
+                        <offer_id>
+                            <xsl:value-of select="offer_id"/>
+                        </offer_id>
+                    </xsl:if>
+                    <xsl:if test="n_id">
+                        <n_id>
+                            <xsl:value-of select="n_id"/>
+                        </n_id>
+                    </xsl:if>
+                    <xsl:if test="campaign_status">
+                        <campaign_status>
+                            <xsl:value-of select="campaign_status"/>
+                        </campaign_status>
+                    </xsl:if>
+                    <xsl:if test="campaign_rm">
+                        <campaign_rm>
+                            <xsl:value-of select="campaign_rm"/>
+                        </campaign_rm>
+                    </xsl:if>
+                    <xsl:if test="campaign_expend_t">
+                        <campaign_expend_t>
+                            <xsl:value-of select="campaign_expend_t"/>
+                        </campaign_expend_t>
+                    </xsl:if>
+                    <xsl:if test="campaign_expend_c">
+                        <campaign_expend_c>
+                            <xsl:value-of select="campaign_expend_c"/>
+                        </campaign_expend_c>
+                    </xsl:if>
+                    <xsl:if test="campaign_expend_n">
+                        <campaign_expend_n>
+                            <xsl:value-of select="campaign_expend_n"/>
+                        </campaign_expend_n>
+                    </xsl:if>
+                    <xsl:if test="campaign_tl">
+                        <campaign_tl>
+                            <xsl:value-of select="campaign_tl"/>
+                        </campaign_tl>
+                    </xsl:if>
+                    <xsl:if test="campaign_pl">
+                        <campaign_pl>
+                            <xsl:value-of select="campaign_pl"/>
+                        </campaign_pl>
+                    </xsl:if>
+                    <xsl:if test="offer_click_tl">
+                        <offer_click_tl>
+                            <xsl:value-of select="offer_click_tl"/>
+                        </offer_click_tl>
+                    </xsl:if>
+                    <xsl:if test="notinsert">
+                        <notinsert>
+                            <xsl:value-of select="notinsert"/>
+                        </notinsert>
+                    </xsl:if>
+                    <xsl:if test="appid">
+                        <appid>
+                            <xsl:value-of select="appid"/>
+                        </appid>
+                    </xsl:if>
+                    <xsl:if test="seat">
+                        <seat>
+                            <xsl:value-of select="seat"/>
+                        </seat>
+                    </xsl:if>
+                    <xsl:if test="creative_id">
+                        <creative_id>
+                            <xsl:value-of select="creative_id"/>
+                        </creative_id>
+                    </xsl:if>
+                    <xsl:if test="picpath">
+                        <picpath>
+                            <xsl:value-of select="picpath"/>
+                        </picpath>
+                    </xsl:if>
+                    <xsl:for-each select="campaignswitch">
+                        <campaignswitch>
+                            <xsl:for-each select="campaignrate">
+                                <campaignrate>
+                                    <xsl:if test="campaignrate1">
+                                        <campaignrate1>
+                                            <xsl:value-of select="campaignrate1"/>
+                                        </campaignrate1>
+                                    </xsl:if>
+                                    <xsl:if test="campaignrate2">
+                                        <campaignrate2>
+                                            <xsl:value-of select="campaignrate2"/>
+                                        </campaignrate2>
+                                    </xsl:if>
+                                    <xsl:if test="campaignrate3">
+                                        <campaignrate3>
+                                            <xsl:value-of select="campaignrate3"/>
+                                        </campaignrate3>
+                                    </xsl:if>
+                                </campaignrate>
+                            </xsl:for-each>
+                            <xsl:for-each select="campaigndetail">
+                                <campaigndetail>
+                                    <xsl:if test="offerid-nid1">
+                                        <offerid-nid1>
+                                            <xsl:value-of select="offerid-nid1"/>
+                                        </offerid-nid1>
+                                    </xsl:if>
+                                    <xsl:if test="offerid-nid2">
+                                        <offerid-nid2>
+                                            <xsl:value-of select="offerid-nid2"/>
+                                        </offerid-nid2>
+                                    </xsl:if>
+                                    <xsl:if test="offerid-nid3">
+                                        <offerid-nid3>
+                                            <xsl:value-of select="offerid-nid3"/>
+                                        </offerid-nid3>
+                                    </xsl:if>
+                                </campaigndetail>
+                            </xsl:for-each>
+                        </campaignswitch>
+                    </xsl:for-each>
+                    <xsl:if test="n_pl">
+                        <n_pl>
+                            <xsl:value-of select="n_pl"/>
+                        </n_pl>
+                    </xsl:if>
+                    <xsl:if test="product_lp">
+                        <product_lp>
+                            <xsl:value-of select="product_lp"/>
+                        </product_lp>
+                    </xsl:if>
+                </details>
+            </xsl:for-each>
+        </root>
+    </pd:returnBindings>
+    <pd:starter name="win_redis_update_camp_offer">
+        <pd:type>com.tibco.plugin.jms.JMSQueueEventSource</pd:type>
+        <pd:resourceType>ae.activities.JMSQueueEventSource</pd:resourceType>
+        <pd:x>65</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <PermittedMessageType>XML Text</PermittedMessageType>
+            <SessionAttributes>
+                <transacted>false</transacted>
+                <acknowledgeMode>24</acknowledgeMode>
+                <maxSessions>1</maxSessions>
+                <destination>win_redis_update_camp_offer</destination>
+            </SessionAttributes>
+            <ConfigurableHeaders>
+                <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                <JMSExpiration>0</JMSExpiration>
+                <JMSPriority>4</JMSPriority>
+            </ConfigurableHeaders>
+            <ConnectionReference>/AlertEmail/JMS Connection.sharedjmscon</ConnectionReference>
+            <OutDataxsdString>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="tablename" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="allupdate" type="xsd:int" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </OutDataxsdString>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endType/>
+    <pd:endX>813</pd:endX>
+    <pd:endY>144</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1482999650331</pd:targetNamespace>
+    <pd:activity name="CheckCampTL">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>53</pd:x>
+        <pd:y>146</pd:y>
+        <config>
+            <processName>/FrontJSONUI/Level3/Common_Sql.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <sql>
+                    <xsl:value-of select="concat(&quot;select * from view_freshredis_campaign where &quot;,&#xA;$win_redis_update_camp_offer/ns:ActivityOutput/Body/root/tablename,&#xA;&quot;_id=&quot;,&#xA;$win_redis_update_camp_offer/ns:ActivityOutput/Body/root/id&#xA;)"/>
+                </sql>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>123</pd:x>
+        <pd:y>9</pd:y>
+        <pd:width>518</pd:width>
+        <pd:height>225</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$CheckCampTL/unknownResultset/row</pd:over>
+            <pd:iterationElementSlot>rowele</pd:iterationElementSlot>
+            <pd:indexSlot>index</pd:indexSlot>
+            <pd:outSlot>redisdetails</pd:outSlot>
+            <pd:activityOutputName>FreshCampaignToRedis</pd:activityOutputName>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>CheckCamp_Redis</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>UpdateCampBakupDetails</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckCamp_Redis</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>otherwise</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckCamp_Redis</pd:from>
+            <pd:to>GetCampBakupDetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>xpath</pd:conditionType>
+            <pd:xpath>$CheckCamp_Redis/root/keymiss=1
+or
+$CheckCamp_Redis/root/allupdate=1</pd:xpath>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>GetCampBakupDetails</pd:from>
+            <pd:to>FreshCampaignToRedis</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>FreshCampaignToRedis</pd:from>
+            <pd:to>UpdateCampBakupDetails</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="CheckCamp_Redis">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>195</pd:x>
+            <pd:y>65</pd:y>
+            <config>
+                <processName>/FrontJSONUI/AutoRefreshCampToRedis/CommonRedisKeyCheck.process</processName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <xsl:if test="$rowele/row/column[1]/value">
+                        <campaign_id>
+                            <xsl:value-of select="$rowele/row/column[1]/value"/>
+                        </campaign_id>
+                    </xsl:if>
+                    <xsl:if test="$rowele/row/column[2]/value">
+                        <offer_id>
+                            <xsl:value-of select="$rowele/row/column[2]/value"/>
+                        </offer_id>
+                    </xsl:if>
+                    <xsl:if test="$rowele/row/column[3]/value">
+                        <n_id>
+                            <xsl:value-of select="$rowele/row/column[3]/value"/>
+                        </n_id>
+                    </xsl:if>
+                    <allupdate>
+                        <xsl:value-of select="$win_redis_update_camp_offer/ns:ActivityOutput/Body/root/allupdate"/>
+                    </allupdate>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="FreshCampaignToRedis">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>370</pd:x>
+            <pd:y>154</pd:y>
+            <config>
+                <processName>/FrontJSONUI/SampleRedis/RedisUseDBSet _CampaignSwitch.process</processName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <xsl:if test="$CheckCamp_Redis/root/campaign_id">
+                        <campaign_id>
+                            <xsl:value-of select="$CheckCamp_Redis/root/campaign_id"/>
+                        </campaign_id>
+                    </xsl:if>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="GetCampBakupDetails">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>243</pd:x>
+            <pd:y>155</pd:y>
+            <config>
+                <processName>/FrontJSONUI/RedisCommon/GetContentPlus.process</processName>
+                <processNameXPath/>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <allids>
+                        <xsl:value-of select="concat(&#xA;$CheckCamp_Redis/root/offer_id,&#xA;&quot;-&quot;,&#xA;$CheckCamp_Redis/root/n_id&#xA;)"/>
+                    </allids>
+                    <campaign_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/campaign_id"/>
+                    </campaign_id>
+                    <offer_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/offer_id"/>
+                    </offer_id>
+                    <n_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/n_id"/>
+                    </n_id>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="UpdateCampBakupDetails">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>516</pd:x>
+            <pd:y>158</pd:y>
+            <config>
+                <processName>/FrontJSONUI/RedisCommon/SetContentPlus.process</processName>
+                <processNameXPath/>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <campaign_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/campaign_id"/>
+                    </campaign_id>
+                    <offer_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/offer_id"/>
+                    </offer_id>
+                    <n_id>
+                        <xsl:value-of select="$CheckCamp_Redis/root/n_id"/>
+                    </n_id>
+                    <xsl:if test="$GetCampBakupDetails/root/appid">
+                        <appid>
+                            <xsl:value-of select="$GetCampBakupDetails/root/appid"/>
+                        </appid>
+                    </xsl:if>
+                    <xsl:if test="$GetCampBakupDetails/root/seat">
+                        <seat>
+                            <xsl:value-of select="$GetCampBakupDetails/root/seat"/>
+                        </seat>
+                    </xsl:if>
+                    <xsl:if test="$GetCampBakupDetails/root/creative_id">
+                        <creative_id>
+                            <xsl:value-of select="$GetCampBakupDetails/root/creative_id"/>
+                        </creative_id>
+                    </xsl:if>
+                    <xsl:if test="$GetCampBakupDetails/root/picpath">
+                        <picpath>
+                            <xsl:value-of select="$GetCampBakupDetails/root/picpath"/>
+                        </picpath>
+                    </xsl:if>
+                    <campaignswitch>
+                        <campaignrate>
+                            <campaignrate1>
+                                <xsl:value-of select="$GetCampBakupDetails/root/campaignrate1"/>
+                            </campaignrate1>
+                            <campaignrate2>
+                                <xsl:value-of select="$GetCampBakupDetails/root/campaignrate2"/>
+                            </campaignrate2>
+                            <campaignrate3>
+                                <xsl:value-of select="$GetCampBakupDetails/root/campaignrate3"/>
+                            </campaignrate3>
+                        </campaignrate>
+                        <campaigndetail>
+                            <offerid-nid1>
+                                <xsl:value-of select="$GetCampBakupDetails/root/offeridnid1"/>
+                            </offerid-nid1>
+                            <offerid-nid2>
+                                <xsl:value-of select="$GetCampBakupDetails/root/offeridnid2"/>
+                            </offerid-nid2>
+                            <offerid-nid3>
+                                <xsl:value-of select="$GetCampBakupDetails/root/offeridnid3"/>
+                            </offerid-nid3>
+                        </campaigndetail>
+                    </campaignswitch>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>926</pd:x>
+        <pd:y>46</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="SendAlertMail">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>811</pd:x>
+        <pd:y>48</pd:y>
+        <config>
+            <processName>/AlertEmail/SendAlertMail.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <MailStart>
+                <subject>
+                    <xsl:value-of select="&quot;JMS Update Camp/N To Redis Failed&quot;"/>
+                </subject>
+                <content>
+                    <xsl:value-of select="concat(&#xA;&quot; redis fresh campaign base on JMS queue message fails  :  &quot;,&#xA;$Catch/exceptiondata/*,&#xA;&quot;&#xA;&#xA;tablename :  &quot;,&#xA;$win_redis_update_camp_offer/ns:ActivityOutput/Body/root/tablename,&#xA;&quot;&#xA;id : &quot;,&#xA;$win_redis_update_camp_offer/ns:ActivityOutput/Body/root/id&#xA;)"/>
+                </content>
+            </MailStart>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Confirm">
+        <pd:type>com.tibco.pe.core.ConfirmActivity</pd:type>
+        <pd:resourceType>activity.confirm</pd:resourceType>
+        <pd:x>712</pd:x>
+        <pd:y>144</pd:y>
+        <config>
+            <ConfirmEvent>win_redis_update_camp_offer</ConfirmEvent>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>win_redis_update_camp_offer</pd:from>
+        <pd:to>CheckCampTL</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CheckCampTL</pd:from>
+        <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Group</pd:from>
+        <pd:to>Confirm</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>SendAlertMail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlertMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Confirm</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

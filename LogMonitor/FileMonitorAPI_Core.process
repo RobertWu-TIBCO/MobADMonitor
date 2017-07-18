@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file/v2" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>LogMonitor/FileMonitorAPI_Core.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="FileMonitorAPI">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="filename" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="encoding" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>492</pd:endX>
+    <pd:endY>65</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1478769092959</pd:targetNamespace>
+    <pd:activity name="Read File">
+        <pd:type>com.tibco.plugin.file.FileReadActivity</pd:type>
+        <pd:resourceType>ae.activities.FileReadActivity</pd:resourceType>
+        <pd:x>305</pd:x>
+        <pd:y>66</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <excludeContent>true</excludeContent>
+        </config>
+        <pd:inputBindings>
+            <ns:ReadActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="$Start/FileMonitorAPI/filename"/>
+                </fileName>
+                <xsl:if test="$Start/FileMonitorAPI/encoding">
+                    <encoding>
+                        <xsl:value-of select="$Start/FileMonitorAPI/encoding"/>
+                    </encoding>
+                </xsl:if>
+            </ns:ReadActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>637</pd:x>
+        <pd:y>175</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+            <fault>localname=FileNotFoundException namespace=http://schemas.tibco.com/bw/plugins/file/5.0/fileExceptions</fault>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="SendAlertMail">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>490</pd:x>
+        <pd:y>176</pd:y>
+        <config>
+            <processName>/AlertEmail/SendAlertMail.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <MailStart>
+                <subject>
+                    <xsl:value-of select="&quot;Read File Exception ,File Not Found Or I/O Error&quot;"/>
+                </subject>
+                <content>
+                    <xsl:value-of select="concat(&#xA;$Start/FileMonitorAPI/filename,&#xA;&quot; read exception :  &quot;,&#xA;$Catch/exceptiondata/*&#xA;)"/>
+                </content>
+            </MailStart>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="FileSizeIs0">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>311</pd:x>
+        <pd:y>169</pd:y>
+        <config>
+            <processName>/AlertEmail/SendAlertMail.process</processName>
+            <spawn>true</spawn>
+        </config>
+        <pd:inputBindings>
+            <MailStart>
+                <subject>
+                    <xsl:value-of select="&quot;Monitored File Sizes 0&quot;"/>
+                </subject>
+                <content>
+                    <xsl:value-of select="concat(&#xA;$Start/FileMonitorAPI/filename,&#xA;&quot; File Size is &quot;,&#xA;$Read-File/pfx:ReadActivityOutputNoContentClass/fileInfo/size&#xA;)"/>
+                </content>
+            </MailStart>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Read File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Read File</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SendAlertMail</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>SendAlertMail</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Read File</pd:from>
+        <pd:to>FileSizeIs0</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Read-File/pfx:ReadActivityOutputNoContentClass/fileInfo/size=0</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>FileSizeIs0</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

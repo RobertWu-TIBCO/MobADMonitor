@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <pd:name>FrontJSONUI/AutoRefreshCampToRedis/CommonRedisKeyCheck.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startDescription>notinsert =1 means to end directly
+notinsert = -1 means this is ssp and redis key contains campaign_id
+notinsert =0 by default means redis key contains offerid-nid and used 
+for campaign switch</pd:startDescription>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="notinsert" type="xsd:boolean" minOccurs="0"/>
+                    <xsd:element name="allupdate" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:if test="$Start/root/campaign_id">
+                <campaign_id>
+                    <xsl:value-of select="$Start/root/campaign_id"/>
+                </campaign_id>
+            </xsl:if>
+            <xsl:if test="$Start/root/offer_id">
+                <offer_id>
+                    <xsl:value-of select="$Start/root/offer_id"/>
+                </offer_id>
+            </xsl:if>
+            <xsl:if test="$Start/root/n_id">
+                <n_id>
+                    <xsl:value-of select="$Start/root/n_id"/>
+                </n_id>
+            </xsl:if>
+            <xsl:if test="$CheckRedis/javaCodeActivityOutput/keymiss">
+                <keymiss>
+                    <xsl:value-of select="$CheckRedis/javaCodeActivityOutput/keymiss"/>
+                </keymiss>
+            </xsl:if>
+            <xsl:if test="$Start/root/allupdate">
+                <allupdate>
+                    <xsl:value-of select="$Start/root/allupdate"/>
+                </allupdate>
+            </xsl:if>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="campaign_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="offer_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="n_id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="keymiss" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="allupdate" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>290</pd:endX>
+    <pd:endY>197</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1481529034665</pd:targetNamespace>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>107</pd:x>
+        <pd:y>265</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>236</pd:x>
+        <pd:y>263</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:group name="Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>231</pd:x>
+        <pd:y>0</pd:y>
+        <pd:width>141</pd:width>
+        <pd:height>140</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>errorLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>err</pd:indexSlot>
+            <pd:errorCondition>$err &gt; 2</pd:errorCondition>
+            <pd:suspendAfterErrorRetry>false</pd:suspendAfterErrorRetry>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>CheckRedis</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>CheckRedis</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="CheckRedis">
+            <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+            <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+            <pd:x>291</pd:x>
+            <pd:y>64</pd:y>
+            <config>
+                <fileName>CommonRedisKeyCheckCheckRedis</fileName>
+                <packageName>FrontJSONUI.AutoRefreshCampToRedis.CommonRedisKeyCheck</packageName>
+                <fullsource>package FrontJSONUI.AutoRefreshCampToRedis.CommonRedisKeyCheck;
+import java.util.*;
+import java.io.*;
+import redis.clients.jedis.Jedis;
+@SuppressWarnings("unchecked")
+public class CommonRedisKeyCheckCheckRedis{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String allids = "";
+	protected String campaign_id = "";
+	protected String offer_id = "";
+	protected String n_id = "";
+	protected String redis_host = "";
+	protected int redis_port = 0;
+	protected String redis_pass = "";
+	protected int allupdate = 0;
+	protected int keymiss = 0;
+	public String getallids() {
+		return allids;
+	}
+	public void setallids(String val) {
+		allids = val;
+	}
+	public String getcampaign_id() {
+		return campaign_id;
+	}
+	public void setcampaign_id(String val) {
+		campaign_id = val;
+	}
+	public String getoffer_id() {
+		return offer_id;
+	}
+	public void setoffer_id(String val) {
+		offer_id = val;
+	}
+	public String getn_id() {
+		return n_id;
+	}
+	public void setn_id(String val) {
+		n_id = val;
+	}
+	public String getredis_host() {
+		return redis_host;
+	}
+	public void setredis_host(String val) {
+		redis_host = val;
+	}
+	public int getredis_port() {
+		return redis_port;
+	}
+	public void setredis_port(int val) {
+		redis_port = val;
+	}
+	public String getredis_pass() {
+		return redis_pass;
+	}
+	public void setredis_pass(String val) {
+		redis_pass = val;
+	}
+	public int getallupdate() {
+		return allupdate;
+	}
+	public void setallupdate(int val) {
+		allupdate = val;
+	}
+	public int getkeymiss() {
+		return keymiss;
+	}
+	public void setkeymiss(int val) {
+		keymiss = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public CommonRedisKeyCheckCheckRedis() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String allids
+	In  : String campaign_id
+	In  : String offer_id
+	In  : String n_id
+	In  : String redis_host
+	In  : int redis_port
+	In  : String redis_pass
+	In  : int allupdate
+	Out : int keymiss
+* Available Variables: DO NOT MODIFY *****/
+Jedis jedis = new Jedis(redis_host,redis_port,100000);
+//jedis.auth("!VMD1kult");
+jedis.auth(redis_pass);
+if(!jedis.exists(allids)&amp;&amp;allupdate!=1){
+keymiss=1;
+};
+jedis.disconnect();}
+}
+</fullsource>
+                <outputData>
+                    <row>
+                        <fieldName>keymiss</fieldName>
+                        <fieldType>int</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                </outputData>
+                <inputData>
+                    <row>
+                        <fieldName>allids</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>campaign_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>offer_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>n_id</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_host</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_port</fieldName>
+                        <fieldType>int</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>redis_pass</fieldName>
+                        <fieldType>string</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                    <row>
+                        <fieldName>allupdate</fieldName>
+                        <fieldType>int</fieldType>
+                        <fieldRequired>optional</fieldRequired>
+                    </row>
+                </inputData>
+                <byteCode>
+                    <class>
+                        <name>CommonRedisKeyCheckCheckRedis</name>
+                        <byteCode>yv66vgAAADQAXwkAEwBBCQATAEIJABMAQwkAEwBECQATAEUJABMARgkAEwBHCQATAEgJABMASQoAFABKCABLBwBMAwABhqAKAAwATQoADABOCgAMAE8KAFAAUQoADABSBwBTBwBUAQAGYWxsaWRzAQASTGphdmEvbGFuZy9TdHJpbmc7AQALY2FtcGFpZ25faWQBAAhvZmZlcl9pZAEABG5faWQBAApyZWRpc19ob3N0AQAKcmVkaXNfcG9ydAEAAUkBAApyZWRpc19wYXNzAQAJYWxsdXBkYXRlAQAHa2V5bWlzcwEACWdldGFsbGlkcwEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACXNldGFsbGlkcwEAFShMamF2YS9sYW5nL1N0cmluZzspVgEADmdldGNhbXBhaWduX2lkAQAOc2V0Y2FtcGFpZ25faWQBAAtnZXRvZmZlcl9pZAEAC3NldG9mZmVyX2lkAQAHZ2V0bl9pZAEAB3NldG5faWQBAA1nZXRyZWRpc19ob3N0AQANc2V0cmVkaXNfaG9zdAEADWdldHJlZGlzX3BvcnQBAAMoKUkBAA1zZXRyZWRpc19wb3J0AQAEKEkpVgEADWdldHJlZGlzX3Bhc3MBAA1zZXRyZWRpc19wYXNzAQAMZ2V0YWxsdXBkYXRlAQAMc2V0YWxsdXBkYXRlAQAKZ2V0a2V5bWlzcwEACnNldGtleW1pc3MBAAY8aW5pdD4BAAMoKVYBAAZpbnZva2UBAA1TdGFja01hcFRhYmxlBwBMAQAKRXhjZXB0aW9ucwcAVQEAClNvdXJjZUZpbGUBACJDb21tb25SZWRpc0tleUNoZWNrQ2hlY2tSZWRpcy5qYXZhDAAVABYMABcAFgwAGAAWDAAZABYMABoAFgwAGwAcDAAdABYMAB4AHAwAHwAcDAA4ADkBAAABABlyZWRpcy9jbGllbnRzL2plZGlzL0plZGlzDAA4AFYMAFcAWAwAWQBaBwBbDABcAF0MAF4AOQEAVEZyb250SlNPTlVJL0F1dG9SZWZyZXNoQ2FtcFRvUmVkaXMvQ29tbW9uUmVkaXNLZXlDaGVjay9Db21tb25SZWRpc0tleUNoZWNrQ2hlY2tSZWRpcwEAEGphdmEvbGFuZy9PYmplY3QBABNqYXZhL2xhbmcvRXhjZXB0aW9uAQAXKExqYXZhL2xhbmcvU3RyaW5nO0lJKVYBAARhdXRoAQAmKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS9sYW5nL1N0cmluZzsBAAZleGlzdHMBACcoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvQm9vbGVhbjsBABFqYXZhL2xhbmcvQm9vbGVhbgEADGJvb2xlYW5WYWx1ZQEAAygpWgEACmRpc2Nvbm5lY3QAIQATABQAAAAJAAQAFQAWAAAABAAXABYAAAAEABgAFgAAAAQAGQAWAAAABAAaABYAAAAEABsAHAAAAAQAHQAWAAAABAAeABwAAAAEAB8AHAAAABQAAQAgACEAAQAiAAAAHQABAAEAAAAFKrQAAbAAAAABACMAAAAGAAEAAAASAAEAJAAlAAEAIgAAACIAAgACAAAABiortQABsQAAAAEAIwAAAAoAAgAAABUABQAWAAEAJgAhAAEAIgAAAB0AAQABAAAABSq0AAKwAAAAAQAjAAAABgABAAAAGAABACcAJQABACIAAAAiAAIAAgAAAAYqK7UAArEAAAABACMAAAAKAAIAAAAbAAUAHAABACgAIQABACIAAAAdAAEAAQAAAAUqtAADsAAAAAEAIwAAAAYAAQAAAB4AAQApACUAAQAiAAAAIgACAAIAAAAGKiu1AAOxAAAAAQAjAAAACgACAAAAIQAFACIAAQAqACEAAQAiAAAAHQABAAEAAAAFKrQABLAAAAABACMAAAAGAAEAAAAkAAEAKwAlAAEAIgAAACIAAgACAAAABiortQAEsQAAAAEAIwAAAAoAAgAAACcABQAoAAEALAAhAAEAIgAAAB0AAQABAAAABSq0AAWwAAAAAQAjAAAABgABAAAAKgABAC0AJQABACIAAAAiAAIAAgAAAAYqK7UABbEAAAABACMAAAAKAAIAAAAtAAUALgABAC4ALwABACIAAAAdAAEAAQAAAAUqtAAGrAAAAAEAIwAAAAYAAQAAADAAAQAwADEAAQAiAAAAIgACAAIAAAAGKhu1AAaxAAAAAQAjAAAACgACAAAAMwAFADQAAQAyACEAAQAiAAAAHQABAAEAAAAFKrQAB7AAAAABACMAAAAGAAEAAAA2AAEAMwAlAAEAIgAAACIAAgACAAAABiortQAHsQAAAAEAIwAAAAoAAgAAADkABQA6AAEANAAvAAEAIgAAAB0AAQABAAAABSq0AAisAAAAAQAjAAAABgABAAAAPAABADUAMQABACIAAAAiAAIAAgAAAAYqG7UACLEAAAABACMAAAAKAAIAAAA/AAUAQAABADYALwABACIAAAAdAAEAAQAAAAUqtAAJrAAAAAEAIwAAAAYAAQAAAEIAAQA3ADEAAQAiAAAAIgACAAIAAAAGKhu1AAmxAAAAAQAjAAAACgACAAAARQAFAEYAAQA4ADkAAQAiAAAAeAACAAEAAAA4KrcACioSC7UAASoSC7UAAioSC7UAAyoSC7UABCoSC7UABSoDtQAGKhILtQAHKgO1AAgqA7UACbEAAAABACMAAAAuAAsAAABIAAQACAAKAAkAEAAKABYACwAcAAwAIgANACcADgAtAA8AMgAQADcASQABADoAOQACACIAAABxAAUAAgAAADu7AAxZKrQABSq0AAYSDbcADkwrKrQAB7YAD1crKrQAAbYAELYAEZoAECq0AAgEnwAIKgS1AAkrtgASsQAAAAIAIwAAABYABQAAAFYAEgBYABsAWQAxAFoANgBcADsAAAAIAAH8ADYHADwAPQAAAAQAAQA+AAEAPwAAAAIAQA==</byteCode>
+                    </class>
+                </byteCode>
+            </config>
+            <pd:inputBindings>
+                <javaCodeActivityInput>
+                    <allids>
+                        <xsl:value-of select="if($Start/root/notinsert=-1) then &#xA;concat(&#xA;$Start/root/campaign_id,&#xA;&quot;-&quot;,&#xA; $Start/root/offer_id,&#xA;&quot;-&quot;,&#xA;$Start/root/n_id&#xA;)&#xA;else &#xA;concat(&#xA; $Start/root/offer_id,&#xA;&quot;-&quot;,&#xA;$Start/root/n_id&#xA;)"/>
+                    </allids>
+                    <xsl:if test="$Start/root/campaign_id">
+                        <campaign_id>
+                            <xsl:value-of select="$Start/root/campaign_id"/>
+                        </campaign_id>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/offer_id">
+                        <offer_id>
+                            <xsl:value-of select="$Start/root/offer_id"/>
+                        </offer_id>
+                    </xsl:if>
+                    <xsl:if test="$Start/root/n_id">
+                        <n_id>
+                            <xsl:value-of select="$Start/root/n_id"/>
+                        </n_id>
+                    </xsl:if>
+                    <redis_host>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/Log/redishost"/>
+                    </redis_host>
+                    <redis_port>
+                        <xsl:value-of select="6379"/>
+                    </redis_port>
+                    <redis_pass>
+                        <xsl:value-of select="&quot;!VMD1kult&quot;"/>
+                    </redis_pass>
+                    <xsl:if test="$Start/root/allupdate">
+                        <allupdate>
+                            <xsl:value-of select="$Start/root/allupdate"/>
+                        </allupdate>
+                    </xsl:if>
+                </javaCodeActivityInput>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/notinsert=1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Group</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

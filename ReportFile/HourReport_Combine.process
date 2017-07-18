@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/file">
+    <pd:name>ReportFile/HourReport_Combine.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="day" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="hour" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="startRecord" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="enable" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>628</pd:startX>
+    <pd:startY>177</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>683</pd:endX>
+    <pd:endY>69</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1483522224059</pd:targetNamespace>
+    <pd:activity name="ParseClickReport">
+        <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+        <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+        <pd:x>190</pd:x>
+        <pd:y>175</pd:y>
+        <config>
+            <InputType>File</InputType>
+            <Encoding>ASCII</Encoding>
+            <SpecifyStartRecord>true</SpecifyStartRecord>
+            <SkipBlankLines>true</SkipBlankLines>
+            <ParseSharedConfig>/ReportFile/ClickLog.sharedparse</ParseSharedConfig>
+        </config>
+        <pd:inputBindings>
+            <Input>
+                <fileName>
+                    <xsl:value-of select="$FileName/root/click"/>
+                </fileName>
+                <startRecord>
+                    <xsl:value-of select="$Start/root/startRecord"/>
+                </startRecord>
+                <noOfRecords>
+                    <xsl:value-of select="1000"/>
+                </noOfRecords>
+            </Input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ParseConverReport">
+        <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+        <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+        <pd:x>196</pd:x>
+        <pd:y>60</pd:y>
+        <config>
+            <InputType>File</InputType>
+            <Encoding>ASCII</Encoding>
+            <SpecifyStartRecord>true</SpecifyStartRecord>
+            <SkipBlankLines>true</SkipBlankLines>
+            <ParseSharedConfig>/ReportFile/ConverLog.sharedparse</ParseSharedConfig>
+        </config>
+        <pd:inputBindings>
+            <Input>
+                <fileName>
+                    <xsl:value-of select="$FileName/root/conver"/>
+                </fileName>
+                <startRecord>
+                    <xsl:value-of select="$Start/root/startRecord"/>
+                </startRecord>
+                <noOfRecords>
+                    <xsl:value-of select="1000"/>
+                </noOfRecords>
+            </Input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ClickMap">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>319</pd:x>
+        <pd:y>61</pd:y>
+        <config>
+            <fileName>HourReport_CombineClickMap</fileName>
+            <packageName>ReportFile.HourReport_Combine</packageName>
+            <fullsource>package ReportFile.HourReport_Combine;
+import java.util.*;
+import java.io.*;
+import redis.clients.jedis.Jedis;     
+public class HourReport_CombineClickMap{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String[] keys = null;
+	protected int[] values = null;
+	protected String[] offer = null;
+	protected String[] n = null;
+	protected Object clickm = null;
+	protected Object offerclickm = null;
+	protected Object nclickm = null;
+	protected String allstr = "";
+	public String[] getkeys() {
+		return keys;
+	}
+	public void setkeys(String[] val) {
+		keys = val;
+	}
+	public int[] getvalues() {
+		return values;
+	}
+	public void setvalues(int[] val) {
+		values = val;
+	}
+	public String[] getoffer() {
+		return offer;
+	}
+	public void setoffer(String[] val) {
+		offer = val;
+	}
+	public String[] getn() {
+		return n;
+	}
+	public void setn(String[] val) {
+		n = val;
+	}
+	public Object getclickm() {
+		return clickm;
+	}
+	public void setclickm(Object val) {
+		clickm = val;
+	}
+	public Object getofferclickm() {
+		return offerclickm;
+	}
+	public void setofferclickm(Object val) {
+		offerclickm = val;
+	}
+	public Object getnclickm() {
+		return nclickm;
+	}
+	public void setnclickm(Object val) {
+		nclickm = val;
+	}
+	public String getallstr() {
+		return allstr;
+	}
+	public void setallstr(String val) {
+		allstr = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public HourReport_CombineClickMap() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String[] keys
+	In  : int[] values
+	In  : String[] offer
+	In  : String[] n
+	Out : Object clickm
+	Out : Object offerclickm
+	Out : Object nclickm
+	Out : String allstr
+* Available Variables: DO NOT MODIFY *****/
+
+Map&lt;String, Integer&gt; click = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; offerclick = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; nclick = new HashMap&lt;String,Integer&gt;();
+
+for(int i=0;i&lt;keys.length;i++)
+{
+	click.put(keys[i],values[i]);
+	if(offerclick.containsKey(offer[i]))
+	offerclick.put(offer[i],offerclick.get(offer[i])+values[i]);
+	else
+	offerclick.put(offer[i],values[i]);
+
+	if(nclick.containsKey(n[i]))
+	nclick.put(n[i],nclick.get(n[i])+values[i]);
+	else
+	nclick.put(n[i],values[i]);
+}
+
+clickm=click;
+offerclickm=offerclick;
+nclickm=nclick;
+String lf="\n";
+String aa="@_@";
+allstr="moffern_clickm"+aa+click.toString()+lf+"moffer_clickm"+aa+offerclick.toString()+lf+"mn_clickm"+aa+nclick.toString()+lf;
+//System.out.println("allstr : "+allstr);
+}
+
+public static Map&lt;String, String&gt; mapStringToMap(String str) {
+		str = str.substring(1, str.length() - 1);
+		String[] strs = str.split(", ");
+		Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();
+		for (String string : strs) {
+			String key = string.split("=")[0];
+			
+	        try {
+				String value = string.split("=")[1];
+				map.put(key, value);
+				
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		return map;
+	}
+}
+</fullsource>
+            <inputData>
+                <row>
+                    <fieldName>keys</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>values</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offer</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>n</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+            </inputData>
+            <outputData>
+                <row>
+                    <fieldName>clickm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offerclickm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>nclickm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>allstr</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>HourReport_CombineClickMap</name>
+                    <byteCode>yv66vgAAADQAkgkAIwBbCQAjAFwJACMAXQkAIwBeCQAjAF8JACMAYAkAIwBhCQAjAGIKACQAYwgAZAcAZQoACwBjCgARAGYLAGcAaAsAZwBpCwBnAGoHAGsKABEAbAgAbQgAbgcAbwoAFQBjCABwCgAVAHEKACQAcggAcwgAdAoAFQByCgB1AHYKAHUAdwgAeAoAdQB5CAB6BwB7BwB8BwB9AQAEa2V5cwEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAZ2YWx1ZXMBAAJbSQEABW9mZmVyAQABbgEABmNsaWNrbQEAEkxqYXZhL2xhbmcvT2JqZWN0OwEAC29mZmVyY2xpY2ttAQAHbmNsaWNrbQEABmFsbHN0cgEAEkxqYXZhL2xhbmcvU3RyaW5nOwEAB2dldGtleXMBABUoKVtMamF2YS9sYW5nL1N0cmluZzsBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAHc2V0a2V5cwEAFihbTGphdmEvbGFuZy9TdHJpbmc7KVYBAAlnZXR2YWx1ZXMBAAQoKVtJAQAJc2V0dmFsdWVzAQAFKFtJKVYBAAhnZXRvZmZlcgEACHNldG9mZmVyAQAEZ2V0bgEABHNldG4BAAlnZXRjbGlja20BABQoKUxqYXZhL2xhbmcvT2JqZWN0OwEACXNldGNsaWNrbQEAFShMamF2YS9sYW5nL09iamVjdDspVgEADmdldG9mZmVyY2xpY2ttAQAOc2V0b2ZmZXJjbGlja20BAApnZXRuY2xpY2ttAQAKc2V0bmNsaWNrbQEACWdldGFsbHN0cgEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAJc2V0YWxsc3RyAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQAGPGluaXQ+AQADKClWAQAGaW52b2tlAQANU3RhY2tNYXBUYWJsZQcAfAcAfgEACkV4Y2VwdGlvbnMBAA5tYXBTdHJpbmdUb01hcAEAIyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvdXRpbC9NYXA7BwB/BwAmBwB7AQAJU2lnbmF0dXJlAQBJKExqYXZhL2xhbmcvU3RyaW5nOylMamF2YS91dGlsL01hcDxMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL1N0cmluZzs+OwEAClNvdXJjZUZpbGUBAB9Ib3VyUmVwb3J0X0NvbWJpbmVDbGlja01hcC5qYXZhDAAlACYMACcAKAwAKQAmDAAqACYMACsALAwALQAsDAAuACwMAC8AMAwASwBMAQAAAQARamF2YS91dGlsL0hhc2hNYXAMAIAAgQcAfgwAggCDDACEAIUMAIYAhwEAEWphdmEvbGFuZy9JbnRlZ2VyDACIAIkBAAEKAQADQF9AAQAXamF2YS9sYW5nL1N0cmluZ0J1aWxkZXIBAA5tb2ZmZXJuX2NsaWNrbQwAigCLDACMAEgBAA1tb2ZmZXJfY2xpY2ttAQAJbW5fY2xpY2ttBwB/DACNAIkMAI4AjwEAAiwgDACQAJEBAAE9AQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAOFJlcG9ydEZpbGUvSG91clJlcG9ydF9Db21iaW5lL0hvdXJSZXBvcnRfQ29tYmluZUNsaWNrTWFwAQAQamF2YS9sYW5nL09iamVjdAEADWphdmEvdXRpbC9NYXABABBqYXZhL2xhbmcvU3RyaW5nAQAHdmFsdWVPZgEAFihJKUxqYXZhL2xhbmcvSW50ZWdlcjsBAANwdXQBADgoTGphdmEvbGFuZy9PYmplY3Q7TGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvT2JqZWN0OwEAC2NvbnRhaW5zS2V5AQAVKExqYXZhL2xhbmcvT2JqZWN0OylaAQADZ2V0AQAmKExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS9sYW5nL09iamVjdDsBAAhpbnRWYWx1ZQEAAygpSQEABmFwcGVuZAEALShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEACHRvU3RyaW5nAQAGbGVuZ3RoAQAJc3Vic3RyaW5nAQAWKElJKUxqYXZhL2xhbmcvU3RyaW5nOwEABXNwbGl0AQAnKExqYXZhL2xhbmcvU3RyaW5nOylbTGphdmEvbGFuZy9TdHJpbmc7ACEAIwAkAAAACAAEACUAJgAAAAQAJwAoAAAABAApACYAAAAEACoAJgAAAAQAKwAsAAAABAAtACwAAAAEAC4ALAAAAAQALwAwAAAAEwABADEAMgABADMAAAAdAAEAAQAAAAUqtAABsAAAAAEANAAAAAYAAQAAABAAAQA1ADYAAQAzAAAAIgAC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</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <xsl:for-each select="$ParseClickReport/Output/Rows/root">
+                    <keys>
+                        <xsl:value-of select="concat(current()/offer_id, &quot;-&quot;,current()/n_id)"/>
+                    </keys>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseClickReport/Output/Rows/root/click">
+                    <values>
+                        <xsl:value-of select="."/>
+                    </values>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseClickReport/Output/Rows/root/offer_id">
+                    <offer>
+                        <xsl:value-of select="."/>
+                    </offer>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseClickReport/Output/Rows/root/n_id">
+                    <n>
+                        <xsl:value-of select="."/>
+                    </n>
+                </xsl:for-each>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ConverMap">
+        <pd:type>com.tibco.plugin.java.JavaActivity</pd:type>
+        <pd:resourceType>ae.javapalette.javaActivity</pd:resourceType>
+        <pd:x>440</pd:x>
+        <pd:y>61</pd:y>
+        <config>
+            <fileName>HourReport_CombineConverMap</fileName>
+            <packageName>ReportFile.HourReport_Combine</packageName>
+            <fullsource>package ReportFile.HourReport_Combine;
+import java.util.*;
+import java.io.*;
+public class HourReport_CombineConverMap{
+/****** START SET/GET METHOD, DO NOT MODIFY *****/
+	protected String[] keys = null;
+	protected int[] values_normal = null;
+	protected int[] values_rm = null;
+	protected int[] values_dup = null;
+	protected String[] offer = null;
+	protected String[] n = null;
+	protected Object normalm = null;
+	protected Object rmm = null;
+	protected Object dupm = null;
+	protected Object allconm = null;
+	protected Object offerconm = null;
+	protected Object offercon_normalm = null;
+	protected Object offercon_rmm = null;
+	protected Object offercon_dupm = null;
+	protected Object nconm = null;
+	protected Object ncon_normalm = null;
+	protected Object ncon_rmm = null;
+	protected Object ncon_dupm = null;
+	protected String allstr_con = "";
+	public String[] getkeys() {
+		return keys;
+	}
+	public void setkeys(String[] val) {
+		keys = val;
+	}
+	public int[] getvalues_normal() {
+		return values_normal;
+	}
+	public void setvalues_normal(int[] val) {
+		values_normal = val;
+	}
+	public int[] getvalues_rm() {
+		return values_rm;
+	}
+	public void setvalues_rm(int[] val) {
+		values_rm = val;
+	}
+	public int[] getvalues_dup() {
+		return values_dup;
+	}
+	public void setvalues_dup(int[] val) {
+		values_dup = val;
+	}
+	public String[] getoffer() {
+		return offer;
+	}
+	public void setoffer(String[] val) {
+		offer = val;
+	}
+	public String[] getn() {
+		return n;
+	}
+	public void setn(String[] val) {
+		n = val;
+	}
+	public Object getnormalm() {
+		return normalm;
+	}
+	public void setnormalm(Object val) {
+		normalm = val;
+	}
+	public Object getrmm() {
+		return rmm;
+	}
+	public void setrmm(Object val) {
+		rmm = val;
+	}
+	public Object getdupm() {
+		return dupm;
+	}
+	public void setdupm(Object val) {
+		dupm = val;
+	}
+	public Object getallconm() {
+		return allconm;
+	}
+	public void setallconm(Object val) {
+		allconm = val;
+	}
+	public Object getofferconm() {
+		return offerconm;
+	}
+	public void setofferconm(Object val) {
+		offerconm = val;
+	}
+	public Object getoffercon_normalm() {
+		return offercon_normalm;
+	}
+	public void setoffercon_normalm(Object val) {
+		offercon_normalm = val;
+	}
+	public Object getoffercon_rmm() {
+		return offercon_rmm;
+	}
+	public void setoffercon_rmm(Object val) {
+		offercon_rmm = val;
+	}
+	public Object getoffercon_dupm() {
+		return offercon_dupm;
+	}
+	public void setoffercon_dupm(Object val) {
+		offercon_dupm = val;
+	}
+	public Object getnconm() {
+		return nconm;
+	}
+	public void setnconm(Object val) {
+		nconm = val;
+	}
+	public Object getncon_normalm() {
+		return ncon_normalm;
+	}
+	public void setncon_normalm(Object val) {
+		ncon_normalm = val;
+	}
+	public Object getncon_rmm() {
+		return ncon_rmm;
+	}
+	public void setncon_rmm(Object val) {
+		ncon_rmm = val;
+	}
+	public Object getncon_dupm() {
+		return ncon_dupm;
+	}
+	public void setncon_dupm(Object val) {
+		ncon_dupm = val;
+	}
+	public String getallstr_con() {
+		return allstr_con;
+	}
+	public void setallstr_con(String val) {
+		allstr_con = val;
+	}
+/****** END SET/GET METHOD, DO NOT MODIFY *****/
+	public HourReport_CombineConverMap() {
+	}
+	public void invoke() throws Exception {
+/* Available Variables: DO NOT MODIFY
+	In  : String[] keys
+	In  : int[] values_normal
+	In  : int[] values_rm
+	In  : int[] values_dup
+	In  : String[] offer
+	In  : String[] n
+	Out : Object normalm
+	Out : Object rmm
+	Out : Object dupm
+	Out : Object allconm
+	Out : Object offerconm
+	Out : Object offercon_normalm
+	Out : Object offercon_rmm
+	Out : Object offercon_dupm
+	Out : Object nconm
+	Out : Object ncon_normalm
+	Out : Object ncon_rmm
+	Out : Object ncon_dupm
+	Out : String allstr_con
+* Available Variables: DO NOT MODIFY *****/
+
+Map&lt;String, Integer&gt; normal = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; rm = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; dup = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; allcon = new HashMap&lt;String,Integer&gt;();
+
+Map&lt;String, Integer&gt; offercon = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; offercon_normal = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; offercon_rm = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; offercon_dup = new HashMap&lt;String,Integer&gt;();
+
+Map&lt;String, Integer&gt; ncon = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; ncon_normal = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; ncon_rm = new HashMap&lt;String,Integer&gt;();
+Map&lt;String, Integer&gt; ncon_dup = new HashMap&lt;String,Integer&gt;();
+
+	int allvalue=0;
+for(int i=0;i&lt;keys.length;i++)
+{
+	allvalue=values_dup[i]+values_rm[i]+values_normal[i];
+
+	normal.put(keys[i],values_normal[i]);
+	rm.put(keys[i],values_rm[i]);
+	dup.put(keys[i],values_dup[i]);
+	allcon.put(keys[i],allvalue);
+
+	if(offercon.containsKey(offer[i]))
+	offercon.put(offer[i],offercon.get(offer[i])+allvalue);
+	else
+	offercon.put(offer[i],allvalue);
+
+	if(offercon_normal.containsKey(offer[i]))
+	offercon_normal.put(offer[i],offercon_normal.get(offer[i])+values_normal[i]);
+	else
+	offercon_normal.put(offer[i],values_normal[i]);
+
+	if(offercon_rm.containsKey(offer[i]))
+	offercon_rm.put(offer[i],offercon_rm.get(offer[i])+values_rm[i]);
+	else
+	offercon_rm.put(offer[i],values_rm[i]);
+
+ 	if(offercon_dup.containsKey(offer[i]))
+	offercon_dup.put(offer[i],offercon_dup.get(offer[i])+values_dup[i]);
+	else
+	offercon_dup.put(offer[i],values_dup[i]);
+	
+	if(ncon.containsKey(n[i]))
+	ncon.put(n[i],ncon.get(n[i])+allvalue);
+	else
+	ncon.put(n[i],allvalue);
+
+	if(ncon_normal.containsKey(n[i]))
+	ncon_normal.put(n[i],ncon_normal.get(n[i])+values_normal[i]);
+	else
+	ncon_normal.put(n[i],values_normal[i]);
+
+	if(ncon_rm.containsKey(n[i]))
+	ncon_rm.put(n[i],ncon_rm.get(n[i])+values_rm[i]);
+	else
+	ncon_rm.put(n[i],values_rm[i]);
+
+ 	if(ncon_dup.containsKey(n[i]))
+	ncon_dup.put(n[i],ncon_dup.get(n[i])+values_dup[i]);
+	else
+	ncon_dup.put(n[i],values_dup[i]);
+}
+
+
+normalm = normal ; 
+rmm = rm ; 
+dupm = dup ; 
+allconm = allcon ; 
+
+offerconm = offercon ; 
+offercon_normalm = offercon_normal ; 
+offercon_rmm = offercon_rm ; 
+offercon_dupm = offercon_dup ; 
+
+nconm = ncon ; 
+ncon_normalm = ncon_normal ; 
+ncon_rmm = ncon_rm ; 
+ncon_dupm = ncon_dup ; 
+
+String lf="\n";
+String aa="@_@";
+
+allstr_con= 
+"moffern_normalm"+aa+normal + lf + "moffern_rmm"+aa+rm + lf + "moffern_dupm"+aa+dup + lf + "moffern_allcon_m"+aa+allcon + lf + 
+
+"moffer_normalm"+aa+offercon_normal + lf + "moffer_rmm"+aa+offercon_rm + lf + "moffer_dupm"+aa+offercon_dup + lf + "moffer_allcon_m"+aa+offercon + lf + 
+
+"mn_normalm"+aa+ncon_normal + lf + "mn_rmm"+aa+ncon_rm + lf + "mn_dupm"+aa+ncon_dup + lf +   "mn_allcon_m"+aa+ncon + lf ;
+
+//System.out.println("allstr_con  : "+allstr_con);
+
+}
+
+public static Map&lt;String, String&gt; mapStringToMap(String str) {
+		str = str.substring(1, str.length() - 1);
+		String[] strs = str.split(", ");
+		Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();
+		for (String string : strs) {
+			String key = string.split("=")[0];
+			
+	        try {
+				String value = string.split("=")[1];
+				map.put(key, value);
+				
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		return map;
+	}
+}
+</fullsource>
+            <inputData>
+                <row>
+                    <fieldName>keys</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>values_normal</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>values_rm</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>values_dup</fieldName>
+                    <fieldType>int</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offer</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>n</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>repeating</fieldRequired>
+                </row>
+            </inputData>
+            <outputData>
+                <row>
+                    <fieldName>normalm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>rmm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>dupm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>allconm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offerconm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offercon_normalm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offercon_rmm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>offercon_dupm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>nconm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>ncon_normalm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>ncon_rmm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>ncon_dupm</fieldName>
+                    <fieldType>ObjectReference</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+                <row>
+                    <fieldName>allstr_con</fieldName>
+                    <fieldType>string</fieldType>
+                    <fieldRequired>optional</fieldRequired>
+                </row>
+            </outputData>
+            <byteCode>
+                <class>
+                    <name>HourReport_CombineConverMap</name>
+                    <byteCode>yv66vgAAADQA3QkANwCQCQA3AJEJADcAkgkANwCTCQA3AJQJADcAlQkANwCWCQA3AJcJADcAmAkANwCZCQA3AJoJADcAmwkANwCcCQA3AJ0JADcAngkANwCfCQA3AKAJADcAoQkANwCiCgA4AKMIAKQHAKUKABYAowoAHACmCwCnAKgLAKcAqQsApwCqBwCrCgAcAKwIAK0IAK4HAK8KACAAowgAsAoAIACxCgAgALIIALMIALQIALUIALYIALcIALgIALkIALoIALsIALwIAL0KACAAvgoAvwDACgC/AMEIAMIKAL8AwwgAxAcAxQcAxgcAxwEABGtleXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQANdmFsdWVzX25vcm1hbAEAAltJAQAJdmFsdWVzX3JtAQAKdmFsdWVzX2R1cAEABW9mZmVyAQABbgEAB25vcm1hbG0BABJMamF2YS9sYW5nL09iamVjdDsBAANybW0BAARkdXBtAQAHYWxsY29ubQEACW9mZmVyY29ubQEAEG9mZmVyY29uX25vcm1hbG0BAAxvZmZlcmNvbl9ybW0BAA1vZmZlcmNvbl9kdXBtAQAFbmNvbm0BAAxuY29uX25vcm1hbG0BAAhuY29uX3JtbQEACW5jb25fZHVwbQEACmFsbHN0cl9jb24BABJMamF2YS9sYW5nL1N0cmluZzsBAAdnZXRrZXlzAQAVKClbTGphdmEvbGFuZy9TdHJpbmc7AQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAB3NldGtleXMBABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAQZ2V0dmFsdWVzX25vcm1hbAEABCgpW0kBABBzZXR2YWx1ZXNfbm9ybWFsAQAFKFtJKVYBAAxnZXR2YWx1ZXNfcm0BAAxzZXR2YWx1ZXNfcm0BAA1nZXR2YWx1ZXNfZHVwAQANc2V0dmFsdWVzX2R1cAEACGdldG9mZmVyAQAIc2V0b2ZmZXIBAARnZXRuAQAEc2V0bgEACmdldG5vcm1hbG0BABQoKUxqYXZhL2xhbmcvT2JqZWN0OwEACnNldG5vcm1hbG0BABUoTGphdmEvbGFuZy9PYmplY3Q7KVYBAAZnZXRybW0BAAZzZXRybW0BAAdnZXRkdXBtAQAHc2V0ZHVwbQEACmdldGFsbGNvbm0BAApzZXRhbGxjb25tAQAMZ2V0b2ZmZXJjb25tAQAMc2V0b2ZmZXJjb25tAQATZ2V0b2ZmZXJjb25fbm9ybWFsbQEAE3NldG9mZmVyY29uX25vcm1hbG0BAA9nZXRvZmZlcmNvbl9ybW0BAA9zZXRvZmZlcmNvbl9ybW0BABBnZXRvZmZlcmNvbl9kdXBtAQAQc2V0b2ZmZXJjb25fZHVwbQEACGdldG5jb25tAQAIc2V0bmNvbm0BAA9nZXRuY29uX25vcm1hbG0BAA9zZXRuY29uX25vcm1hbG0BAAtnZXRuY29uX3JtbQEAC3NldG5jb25fcm1tAQAMZ2V0bmNvbl9kdXBtAQAMc2V0bmNvbl9kdXBtAQANZ2V0YWxsc3RyX2NvbgEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQANc2V0YWxsc3RyX2NvbgEAFShMamF2YS9sYW5nL1N0cmluZzspVgEABjxpbml0PgEAAygpVgEABmludm9rZQEADVN0YWNrTWFwVGFibGUHAMYHAMgBAApFeGNlcHRpb25zAQAObWFwU3RyaW5nVG9NYXABACMoTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL3V0aWwvTWFwOwcAyQcAOgcAxQEACVNpZ25hdHVyZQEASShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvdXRpbC9NYXA8TGphdmEvbGFuZy9TdHJpbmc7TGphdmEvbGFuZy9TdHJpbmc7PjsBAApTb3VyY2VGaWxlAQAgSG91clJlcG9ydF9Db21iaW5lQ29udmVyTWFwLmphdmEMADkAOgwAOwA8DAA9ADwMAD4APAwAPwA6DABAADoMAEEAQgwAQwBCDABEAEIMAEUAQgwARgBCDABHAEIMAEgAQgwASQBCDABKAEIMAEsAQgwATABCDABNAEIMAE4ATwwAgACBAQAAAQARamF2YS91dGlsL0hhc2hNYXAMAMoAywcAyAwAzADNDADOAM8MANAA0QEAEWphdmEvbGFuZy9JbnRlZ2VyDADSANMBAAEKAQADQF9AAQAXamF2YS9sYW5nL1N0cmluZ0J1aWxkZXIBAA9tb2ZmZXJuX25vcm1hbG0MANQA1QwA1ADWAQALbW9mZmVybl9ybW0BAAxtb2ZmZXJuX2R1cG0BABBtb2ZmZXJuX2FsbGNvbl9tAQAObW9mZmVyX25vcm1hbG0BAAptb2ZmZXJfcm1tAQALbW9mZmVyX2R1cG0BAA9tb2ZmZXJfYWxsY29uX20BAAptbl9ub3JtYWxtAQAGbW5fcm1tAQAHbW5fZHVwbQEAC21uX2FsbGNvbl9tDADXAH0HAMkMANgA0wwA2QDaAQACLCAMANsA3AEAAT0BABNqYXZhL2xhbmcvRXhjZXB0aW9uAQA5UmVwb3J0RmlsZS9Ib3VyUmVwb3J0X0NvbWJpbmUvSG91clJlcG9ydF9Db21iaW5lQ29udmVyTWFwAQAQamF2YS9sYW5nL09iamVjdAEADWphdmEvdXRpbC9NYXABABBqYXZhL2xhbmcvU3RyaW5nAQAHdmFsdWVPZgEAFihJKUxqYXZhL2xhbmcvSW50ZWdlcjsBAANwdXQBADgoTGphdmEvbGFuZy9PYmplY3Q7TGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvT2JqZWN0OwEAC2NvbnRhaW5zS2V5AQAVKExqYXZhL2xhbmcvT2JqZWN0OylaAQADZ2V0AQAmKExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS9sYW5nL09iamVjdDsBAAhpbnRWYWx1ZQEAAygpSQEABmFwcGVuZAEALShMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEALShMamF2YS9sYW5nL09iamVjdDspTGphdmEvbGFuZy9TdHJpbmdCdWlsZGVyOwEACHRvU3RyaW5nAQAGbGVuZ3RoAQAJc3Vic3RyaW5nAQAWKElJKUxqYXZhL2xhbmcvU3RyaW5nOwEABXNwbGl0AQAnKExqYXZhL2xhbmcvU3RyaW5nOylbTGphdmEvbGFuZy9TdHJpbmc7ACEANwA4AAAAEwAEADkAOgAAAAQAOwA8AAAABAA9ADwAAAAEAD4APAAAAAQAPwA6AAAABABAADoAAAAEAEEAQgAAAAQAQwBCAAAABABEAEIAAAAEAEUAQgAAAAQARgBCAAAABABHAEIAAAAEAEgAQgAAAAQASQBCAAAABABKAEIAAAAEAEsAQgAAAAQATABCAAAABABNAEIAAAAEAE4ATwAAACkAAQBQAFEAAQBSAAAAHQABAAEAAAAFKrQAAbAAAAABAFMAAAAGAAEAAAAaAAEAVABVAAEA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</byteCode>
+                </class>
+            </byteCode>
+        </config>
+        <pd:inputBindings>
+            <javaCodeActivityInput>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root">
+                    <keys>
+                        <xsl:value-of select="concat(current()/offer_id,&quot;-&quot;, current()/n_id)"/>
+                    </keys>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root/normal">
+                    <values_normal>
+                        <xsl:value-of select="."/>
+                    </values_normal>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root/rm">
+                    <values_rm>
+                        <xsl:value-of select="."/>
+                    </values_rm>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root/duplicated">
+                    <values_dup>
+                        <xsl:value-of select="."/>
+                    </values_dup>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root/offer_id">
+                    <offer>
+                        <xsl:value-of select="."/>
+                    </offer>
+                </xsl:for-each>
+                <xsl:for-each select="$ParseConverReport/Output/Rows/root/n_id">
+                    <n>
+                        <xsl:value-of select="."/>
+                    </n>
+                </xsl:for-each>
+            </javaCodeActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="HourReportMerge">
+        <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+        <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+        <pd:x>565</pd:x>
+        <pd:y>66</pd:y>
+        <config>
+            <encoding>text</encoding>
+            <compressFile>None</compressFile>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns2:WriteActivityInputTextClass>
+                <fileName>
+                    <xsl:value-of select="$FileName/root/merge"/>
+                </fileName>
+                <textContent>
+                    <xsl:value-of select="concat(&#xA;$ClickMap/javaCodeActivityOutput/allstr,&#xA;$ConverMap/javaCodeActivityOutput/allstr_con&#xA;)"/>
+                </textContent>
+                <encoding>
+                    <xsl:value-of select="&quot;UTF-8&quot;"/>
+                </encoding>
+            </ns2:WriteActivityInputTextClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="FileName">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>333</pd:x>
+        <pd:y>174</pd:y>
+        <config>
+            <element>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="click" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="conver" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="merge" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <click>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.click.log_&quot;,&#xA;$Start/root/day,&#xA;if($Start/root/hour and $Start/root/hour!=&quot;&quot;) then&#xA;concat(&#xA;&quot;T&quot;,&#xA;$Start/root/hour&#xA;)&#xA;else &#xA;&quot;&quot;,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </click>
+                <conver>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.conversion.log_&quot;,&#xA;$Start/root/day,&#xA;if($Start/root/hour and $Start/root/hour!=&quot;&quot;) then&#xA;concat(&#xA;&quot;T&quot;,&#xA;$Start/root/hour&#xA;)&#xA;else &#xA;&quot;&quot;,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </conver>
+                <merge>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.merge.log_&quot;,&#xA;$Start/root/day,&#xA;if($Start/root/hour and $Start/root/hour!=&quot;&quot;) then&#xA;concat(&#xA;&quot;T&quot;,&#xA;$Start/root/hour&#xA;)&#xA;else &#xA;&quot;&quot;,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </merge>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ExistMerge">
+        <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
+        <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
+        <pd:x>483</pd:x>
+        <pd:y>173</pd:y>
+        <config>
+            <mode>only-files</mode>
+        </config>
+        <pd:inputBindings>
+            <ns2:ListFilesActivityConfig>
+                <fileName>
+                    <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\report.merge.log_&quot;,&#xA;$Start/root/day,&#xA;if($Start/root/hour and $Start/root/hour!=&quot;&quot;) then&#xA;concat(&#xA;&quot;T&quot;,&#xA;$Start/root/hour&#xA;)&#xA;else &#xA;&quot;&quot;,&#xA;&quot;.csv&quot;&#xA;)"/>
+                </fileName>
+            </ns2:ListFilesActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>103</pd:x>
+        <pd:y>282</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>314</pd:x>
+        <pd:y>285</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>ExistMerge</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$Start/root/enable=1</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ParseClickReport</pd:from>
+        <pd:to>ParseConverReport</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ParseConverReport</pd:from>
+        <pd:to>ClickMap</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ClickMap</pd:from>
+        <pd:to>ConverMap</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ConverMap</pd:from>
+        <pd:to>HourReportMerge</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>HourReportMerge</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>FileName</pd:from>
+        <pd:to>ParseClickReport</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistMerge</pd:from>
+        <pd:to>FileName</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ExistMerge</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$ExistMerge/ns2:ListFilesActivityOutput/files/fileInfo[1]/fullName</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/namespaces/tnt/plugins/file">
+    <pd:name>ReportFile/DayMap_GenMapFiles.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="day" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="hourneed" type="xsd:int" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>76</pd:startX>
+    <pd:startY>50</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>780</pd:endX>
+    <pd:endY>69</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1484038685238</pd:targetNamespace>
+    <pd:activity name="Price">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>77</pd:x>
+        <pd:y>149</pd:y>
+        <config>
+            <processName>/ReportFile/DayPrice_MapToFile.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <day>
+                    <xsl:value-of select="$Start/root/day"/>
+                </day>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>135</pd:x>
+        <pd:y>22</pd:y>
+        <pd:width>414</pd:width>
+        <pd:height>218</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>repeat</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:repeatCondition>if($Start/root/day=substring-before(current-date(), "+")) then
+($i+1) &gt; tib:get-hours-from-time(current-date())
+else
+$i &gt; 22</pd:repeatCondition>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>hour</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>ClickConversion_Day_Awk</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>ClickConversion</pd:from>
+            <pd:to>ClickConversion_Day_Awk</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>DayHourFile</pd:from>
+            <pd:to>ClickConversion</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>hour</pd:from>
+            <pd:to>DayHourFile</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="ClickConversion">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>365</pd:x>
+            <pd:y>172</pd:y>
+            <config>
+                <processName>/ReportFile/HourReport_Combine.process</processName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <day>
+                        <xsl:value-of select="$hour/root/day"/>
+                    </day>
+                    <hour>
+                        <xsl:value-of select="$hour/root/hour"/>
+                    </hour>
+                    <startRecord>
+                        <xsl:value-of select="2"/>
+                    </startRecord>
+                    <xsl:if test="$Start/root/hourneed">
+                        <enable>
+                            <xsl:value-of select="$Start/root/hourneed"/>
+                        </enable>
+                    </xsl:if>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="ClickConversion_Day_Awk">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>448</pd:x>
+            <pd:y>89</pd:y>
+            <config>
+                <processName>/ReportFile/DayReport_Awk.process</processName>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <xsl:if test="$DayHourFile/root/clickfile">
+                        <clickfile>
+                            <xsl:value-of select="$DayHourFile/root/clickfile"/>
+                        </clickfile>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/conversionfile">
+                        <conversionfile>
+                            <xsl:value-of select="$DayHourFile/root/conversionfile"/>
+                        </conversionfile>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/awkfile">
+                        <awkfile>
+                            <xsl:value-of select="$DayHourFile/root/awkfile"/>
+                        </awkfile>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/awkfile_click">
+                        <awkfile_click>
+                            <xsl:value-of select="$DayHourFile/root/awkfile_click"/>
+                        </awkfile_click>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/awkfile_conversion">
+                        <awkfile_conversion>
+                            <xsl:value-of select="$DayHourFile/root/awkfile_conversion"/>
+                        </awkfile_conversion>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/workfolder">
+                        <workfolder>
+                            <xsl:value-of select="$DayHourFile/root/workfolder"/>
+                        </workfolder>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/dayclickfile">
+                        <dayclickfile>
+                            <xsl:value-of select="$DayHourFile/root/dayclickfile"/>
+                        </dayclickfile>
+                    </xsl:if>
+                    <xsl:if test="$DayHourFile/root/dayconversionfile">
+                        <dayconversionfile>
+                            <xsl:value-of select="$DayHourFile/root/dayconversionfile"/>
+                        </dayconversionfile>
+                    </xsl:if>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="DayHourFile">
+            <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+            <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+            <pd:x>279</pd:x>
+            <pd:y>84</pd:y>
+            <config>
+                <element>
+                    <xsd:element name="root">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="clickfile" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="conversionfile" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="awkfile" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="awkfile_click" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="awkfile_conversion" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="workfolder" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="dayclickfile" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="dayconversionfile" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </element>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <clickfile>
+                        <xsl:value-of select="concat(&#xA;&quot;report.click.log_&quot;,&#xA;$hour/root/day,&#xA;&quot;T&quot;,&#xA;$hour/root/hour,&#xA;&quot;.csv&quot;&#xA;)"/>
+                    </clickfile>
+                    <conversionfile>
+                        <xsl:value-of select="concat(&#xA;&quot;report.conversion.log_&quot;,&#xA;$hour/root/day,&#xA;&quot;T&quot;,&#xA;$hour/root/hour,&#xA;&quot;.csv&quot;&#xA;)"/>
+                    </conversionfile>
+                    <awkfile>
+                        <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/AwkFileFolder,&#xA;&quot;combinecampaign.awk&quot;&#xA;)"/>
+                    </awkfile>
+                    <awkfile_click>
+                        <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/AwkFileFolder,&#xA;&quot;combineclickhour.awk&quot;&#xA;)"/>
+                    </awkfile_click>
+                    <awkfile_conversion>
+                        <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/AwkFileFolder,&#xA;&quot;combineconversionhour.awk&quot;&#xA;)"/>
+                    </awkfile_conversion>
+                    <workfolder>
+                        <xsl:value-of select="concat(&#xA;$_globalVariables/ns:GlobalVariables/FolderPath/ReportFileFolder,&#xA;$Start/root/day,&#xA;&quot;\&quot;&#xA;)"/>
+                    </workfolder>
+                    <dayclickfile>
+                        <xsl:value-of select="concat(&#xA;&quot;report.click.log_&quot;,&#xA;$hour/root/day,&#xA;&quot;.csv&quot;&#xA;)"/>
+                    </dayclickfile>
+                    <dayconversionfile>
+                        <xsl:value-of select="concat(&#xA;&quot;report.conversion.log_&quot;,&#xA;$hour/root/day,&#xA;&quot;.csv&quot;&#xA;)"/>
+                    </dayconversionfile>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:activity name="hour">
+            <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+            <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+            <pd:x>233</pd:x>
+            <pd:y>169</pd:y>
+            <config>
+                <element>
+                    <xsd:element name="root">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="day" type="xsd:string" minOccurs="0"/>
+                                <xsd:element name="hour" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </element>
+            </config>
+            <pd:inputBindings>
+                <root>
+                    <xsl:if test="$Start/root/day">
+                        <day>
+                            <xsl:value-of select="$Start/root/day"/>
+                        </day>
+                    </xsl:if>
+                    <hour>
+                        <xsl:value-of select="if($i > 10) then ($i -1) else&#xA; concat(&#xA;&quot;0&quot;,($i -1)&#xA;)"/>
+                    </hour>
+                </root>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="ClickConversion_Day">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>651</pd:x>
+        <pd:y>73</pd:y>
+        <config>
+            <processName>/ReportFile/HourReport_Combine_Linux.process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <day>
+                    <xsl:value-of select="$Start/root/day"/>
+                </day>
+                <startRecord>
+                    <xsl:value-of select="1"/>
+                </startRecord>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>62</pd:x>
+        <pd:y>290</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Rethrow">
+        <pd:type>com.tibco.pe.core.RethrowActivity</pd:type>
+        <pd:resourceType>ae.activities.rethrow</pd:resourceType>
+        <pd:x>225</pd:x>
+        <pd:y>288</pd:y>
+        <config/>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Price</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Price</pd:from>
+        <pd:to>Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ClickConversion_Day</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Group</pd:from>
+        <pd:to>ClickConversion_Day</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Rethrow</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
